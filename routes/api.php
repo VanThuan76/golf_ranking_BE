@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Admin\Controllers\WordExportController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\TournamentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,19 +22,20 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::match(['get', 'post'], 'export-word', [WordExportController::class, 'exportWord']);
-Route::match(['get', 'post'], 'export-word-data', [WordExportController::class, 'exportWordData']);
-Route::get('business', 'BusinessController@find');
-Route::get('businessType', 'BusinessTypeController@find');
-Route::get('branch', 'BranchController@find');
-Route::get('account', 'AccountController@find');
-Route::get('classes', 'ClassController@getAll');
-Route::get('class', 'ClassController@find');
-Route::get('class/get-by-id', 'ClassController@getById');
-Route::get('student', 'StudentController@find');
-Route::get('schedule', 'ScheduleController@find');
-Route::get('schedule/get-by-id', 'ScheduleController@getById');
-Route::get('admin/edu/report-student/{id}', 'Edu_ReportOfStudentController@show')->name('admin.edu.report-student.show');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('register', [RegisterController::class, 'register']);
+
+Route::get('groups', 'GroupController@getList');
+Route::get('organisers', 'OrganiserController@getList');
+Route::post('members', [MemberController::class, 'getList']);
+Route::get('members/{id}', 'MemberController@getById');
+Route::post('tournaments', [TournamentController::class, 'getList']);
+Route::get('tournaments/{id}', 'TournamentController@getById');
+
+Route::get('/auth/redirect/{provider}', 'SocialController@redirect');
+Route::get('/callback/{provider}', 'SocialController@callback');
+
+
 
 
 
