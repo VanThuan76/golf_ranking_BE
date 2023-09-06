@@ -50,4 +50,37 @@ class MemberController extends Controller
         $response = $this->_formatBaseResponse(200, $transformedMembers, 'Lấy dữ liệu thành công');
         return response()->json($response);
     }
+    public function searchMember(Request $request, UtilsCommonHelper $commonController)
+    {
+        $query = Member::query();
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->has('vjgr_code')) {
+            $query->orWhere('vjgr_code', 'like', '%' . $request->input('vjgr_code') . '%');
+        }
+
+        if ($request->has('nationality')) {
+            $query->orWhere('nationality', 'like', '%' . $request->input('nationality') . '%');
+        }
+
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 10);
+        $sorts = $request->input('sorts', []);
+
+
+        $members = $query->orderBy($sorts[0]['field'], $sorts[0]['direction'])
+            ->paginate($size, ['*'], 'page', $page);
+
+        $transformedMembers = $this->transformedMemberData(collect([$members]), $commonController)->first();
+
+
+        return response()->json($this->_formatCountResponse(
+            $transformedMembers,
+            $members->perPage(),
+            $members->total()
+        ));
+    }
 }

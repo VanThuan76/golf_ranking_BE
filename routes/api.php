@@ -28,6 +28,7 @@ Route::post('register', [RegisterController::class, 'register']);
 Route::get('groups', 'GroupController@getList');
 Route::get('organisers', 'OrganiserController@getList');
 Route::post('members', [MemberController::class, 'getList']);
+Route::post('members/search', [MemberController::class, 'searchMember']);
 Route::get('members/{id}', 'MemberController@getById');
 Route::post('tournaments', [TournamentController::class, 'getList']);
 Route::get('tournaments/{id}', 'TournamentController@getById');
