@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TournamentSummary extends Model
 {
-    protected $table = 'tournament_summary';
+    protected $table = 'tournament_summary_bk';
 
     public function tournament()
     {
@@ -16,8 +16,7 @@ class TournamentSummary extends Model
     {
         return $this->belongsTo(Member::class, 'member_id');
     }
-	protected $hidden = [
-    ];
+	protected $hidden = ['tournament_id', 'member_id'];
 
 	protected $guarded = [];
 }

@@ -20,7 +20,7 @@ class Tournament extends Model
     {
         return $this->belongsTo(Organiser::class, 'organiser_id');
     }
-    protected $hidden = ['tournament_type_id', 'tournament_group_id', 'organiser_id'];
+    protected $hidden = ['tournament_type_id', 'tournament_group_id', 'organiser_id', 'member_id'];
 
 	protected $guarded = [];
 }

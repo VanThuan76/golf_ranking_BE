@@ -4,22 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Http\Models\Group;
 use App\Admin\Controllers\UtilsCommonHelper;
+use App\Traits\GroupFormattingTrait;
 use App\Traits\ResponseFormattingTrait;
 
 class GroupController extends Controller
 {
 
-    use ResponseFormattingTrait;
+    use ResponseFormattingTrait, GroupFormattingTrait;
     public function getList(UtilsCommonHelper $commonController)
     {
         $groups = Group::all();
 
-        $transformedGroups = $groups->map(function ($group) use ($commonController) {
-            $group->gender = $commonController->commonCodeGridFormatter('Gender', 'description_vi', $group->gender);
-            $group->status = $commonController->commonCodeGridFormatter('Status', 'description_vi', $group->status);
+        $transformedGroups = [];
+        foreach ($groups as $group) {
+            $group = $this->_formatgroup($group, $commonController);
+            $transformedGroups[] = $group;
+        }
 
-            return $group;
-        });
         $response = $this->_formatBaseResponse(200, $transformedGroups, 'Lấy dữ liệu thành công');
         return response()->json($response);
     }

@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MemberController;
@@ -22,16 +20,26 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', [LoginController::class, 'login']);
-Route::post('register', [RegisterController::class, 'register']);
+
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout');
+Route::post('register', 'Auth\RegisterController@register');
 
 Route::get('groups', 'GroupController@getList');
 Route::get('organisers', 'OrganiserController@getList');
-Route::post('members', [MemberController::class, 'getList']);
-Route::post('members/search', [MemberController::class, 'searchMember']);
+Route::get('common-code', 'CommonCodeController@getList');
+
 Route::get('members/{id}', 'MemberController@getById');
-Route::post('tournaments', [TournamentController::class, 'getList']);
+Route::post('members/search', [MemberController::class, 'searchMember']);
+
+Route::post('tournament-summary', 'TournamentSummaryController@getList');
+Route::post('tournament-detail', 'TournamentDetailController@getList');
+
+Route::post('tournaments/search', [TournamentController::class, 'searchTournament']);
 Route::get('tournaments/{id}', 'TournamentController@getById');
+
+Route::get('tournaments-type', 'TournamentTypeController@getList');
+
 
 Route::get('/auth/redirect/{provider}', 'SocialController@redirect');
 Route::get('/callback/{provider}', 'SocialController@callback');

@@ -4,61 +4,56 @@ namespace App\Http\Controllers;
 
 use App\Http\Models\Tournament;
 use App\Admin\Controllers\UtilsCommonHelper;
-use App\Http\Models\Organiser;
-use App\Http\Models\TournamentGroup;
-use App\Http\Models\TournamentType;
 use App\Traits\ResponseFormattingTrait;
+use App\Traits\TournamentFormattingTrait;
 use Illuminate\Http\Request;
 
 class TournamentController extends Controller
 {
-    use ResponseFormattingTrait;
+    use ResponseFormattingTrait, TournamentFormattingTrait;
 
-    private function transformTournamentData($tournaments, UtilsCommonHelper $commonController)
+    public function searchTournament(Request $request, UtilsCommonHelper $commonController)
     {
-        return $tournaments->map(function ($tournament) use ($commonController) {
-            $tournamentTypes = TournamentType::all()->keyBy('id');
-            if ($tournamentType = $tournamentTypes->get($tournament->tournament_type_id)) {
-                $tournament->tournament_type = $tournamentType;
-            } else {
-                $tournament->tournament_type = null;
-            }
-            $tournamentGroups = TournamentGroup::all()->keyBy('id');
-            if ($tournamentGroup = $tournamentGroups->get($tournament->tournament_group_id)) {
-                $tournament->tournament_group = $tournamentGroup;
-            } else {
-                $tournament->tournament_group = null;
-            }
-            $organisers = Organiser::all()->keyBy('id');
-            if ($organiser = $organisers->get($tournament->organiser_id)) {
-                $tournament->organiser = $organiser;
-            } else {
-                $tournament->organiser = null;
-            }
-            $tournament->region = $commonController->commonCodeGridFormatter('Region', 'description_vi', $tournament->region);
-            $tournament->format = $commonController->commonCodeGridFormatter('Format', 'description_vi',  $tournament->format);
-            $tournament->status = $commonController->commonCodeGridFormatter('TournamentStatus', 'description_vi',  $tournament->status);
-            return $tournament;
-        });
-    }
+        $query = Tournament::query();
+        $filters = $request->input('filters', []);
 
-    public function getList(Request $request, UtilsCommonHelper $commonController)
-    {
+        foreach ($filters as $filter) {
+            $field = $filter['field'];
+            $value = $filter['value'];
+
+            if (!empty($value)) {
+                $query->where($field, 'like', '%' . $value . '%');
+            }
+        }
+
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
 
-        $tournaments = Tournament::orderBy($sorts[0]['field'], $sorts[0]['direction'])
-            ->paginate($size, ['*'], 'page', $page);
-        $transformedTournaments = $this->transformTournamentData($tournaments->getCollection(), $commonController);
+        foreach ($sorts as $sort) {
+            $field = $sort['field'];
+            $direction = $sort['direction'];
 
+            if (!empty($field) && !empty($direction)) {
+                $query->orderBy($field, $direction);
+            }
+        }
 
+        $tournaments = $query->paginate($size, ['*'], 'page', $page);
+        $transformedTournaments = [];
+        foreach ($tournaments as $member) {
+            $member = $this->_formatTournament($member, $commonController);
+            $transformedTournaments[] = $member;
+        }
+
+        $totalPages = ceil($tournaments->total() / $size);
         return response()->json($this->_formatCountResponse(
             $transformedTournaments,
             $tournaments->perPage(),
-            $tournaments->total()
+            $totalPages
         ));
     }
+
 
     public function getById($id, UtilsCommonHelper $commonController)
     {
@@ -69,7 +64,7 @@ class TournamentController extends Controller
             return response()->json($response, 404);
         }
 
-        $transformedTournament = $this->transformTournamentData(collect([$tournament]), $commonController)->first();
+        $transformedTournament = $this->_formatTournament($tournament, $commonController);
 
         $response = $this->_formatBaseResponse(200, $transformedTournament, 'Lấy dữ liệu thành công');
         return response()->json($response);

@@ -4,38 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Models\Member;
 use App\Admin\Controllers\UtilsCommonHelper;
+use App\Traits\MemberFormattingTrait;
 use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-    use ResponseFormattingTrait;
-
-    private function transformedMemberData($members, UtilsCommonHelper $commonController)
-    {
-        return $members->map(function ($member) use ($commonController) {
-            $member->gender = $commonController->commonCodeGridFormatter('Gender', 'description_vi', $member->gender);
-            $member->status = $commonController->commonCodeGridFormatter('Status', 'description_vi', $member->status);
-            return $member;
-        });
-    }
-
-    public function getList(Request $request, UtilsCommonHelper $commonController)
-    {
-        $page = $request->input('page', 1);
-        $size = $request->input('size', 10);
-        $sorts = $request->input('sorts', []);
-
-        $members = Member::orderBy($sorts[0]['field'], $sorts[0]['direction'])
-            ->paginate($size, ['*'], 'page', $page);
-        $transformedMembers = $this->transformedMemberData($members->getCollection(), $commonController);
-
-        return response()->json($this->_formatCountResponse(
-            $transformedMembers,
-            $members->perPage(),
-            $members->total()
-        ));
-    }
+    use ResponseFormattingTrait, MemberFormattingTrait;
 
     public function getById($id, UtilsCommonHelper $commonController)
     {
@@ -45,42 +20,51 @@ class MemberController extends Controller
             return response()->json($response, 404);
         }
 
-        $transformedMembers = $this->transformedMemberData(collect([$member]), $commonController)->first();
+        $transformedMember = $this->_formatMember($member, $commonController);
 
-        $response = $this->_formatBaseResponse(200, $transformedMembers, 'Lấy dữ liệu thành công');
+        $response = $this->_formatBaseResponse(200, $transformedMember, 'Lấy dữ liệu thành công');
         return response()->json($response);
     }
+
     public function searchMember(Request $request, UtilsCommonHelper $commonController)
     {
         $query = Member::query();
+        $filters = $request->input('filters', []);
 
-        if ($request->has('name')) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
-        }
+        foreach ($filters as $filter) {
+            $field = $filter['field'];
+            $value = $filter['value'];
 
-        if ($request->has('vjgr_code')) {
-            $query->orWhere('vjgr_code', 'like', '%' . $request->input('vjgr_code') . '%');
-        }
-
-        if ($request->has('nationality')) {
-            $query->orWhere('nationality', 'like', '%' . $request->input('nationality') . '%');
+            if (!empty($value)) {
+                $query->where($field, 'like', '%' . $value . '%');
+            }
         }
 
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
 
+        foreach ($sorts as $sort) {
+            $field = $sort['field'];
+            $direction = $sort['direction'];
 
-        $members = $query->orderBy($sorts[0]['field'], $sorts[0]['direction'])
-            ->paginate($size, ['*'], 'page', $page);
+            if (!empty($field) && !empty($direction)) {
+                $query->orderBy($field, $direction);
+            }
+        }
 
-        $transformedMembers = $this->transformedMemberData(collect([$members]), $commonController)->first();
+        $members = $query->paginate($size, ['*'], 'page', $page);
+        $transformedMembers = [];
+        foreach ($members as $member) {
+            $member = $this->_formatMember($member, $commonController);
+            $transformedMembers[] = $member;
+        }
 
-
+        $totalPages = ceil($members->total() / $size);
         return response()->json($this->_formatCountResponse(
             $transformedMembers,
             $members->perPage(),
-            $members->total()
+            $totalPages
         ));
     }
 }
