@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Models\Member;
 use App\Admin\Controllers\UtilsCommonHelper;
+use App\Http\Models\Member;
 use App\Traits\MemberFormattingTrait;
 use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class MemberController extends Controller
 {
@@ -66,5 +67,51 @@ class MemberController extends Controller
             $members->perPage(),
             $totalPages
         ));
+    }
+    public function registerMember(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'handicap_vga' => 'required|string|max:255',
+            'gender' => 'required|int',
+            'date_of_birth' => 'required|string|max:255',
+            'nationality' => 'required|string|max:255',
+            'email' => 'required|email|unique:members,email|max:255',
+            'phone_number' => 'required|string|max:255',
+            'guardian_name' => 'required|string|max:255',
+            'relationship' => 'required|string|max:255',
+            'guardian_email' => 'required|email|max:255',
+            'guardian_phone' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $member = new Member();
+        $member->name = $request->input('name');
+        $member->handicap_vga = $request->input('handicap_vga');
+        $member->gender = $request->input('gender');
+        $member->date_of_birth = $request->input('date_of_birth');
+        $member->nationality = $request->input('nationality');
+        $member->email = $request->input('email');
+        $member->phone_number = $request->input('phone_number');
+        $member->guardian_name = $request->input('guardian_name');
+        $member->relationship = $request->input('relationship');
+        $member->guardian_email = $request->input('guardian_email');
+        $member->guardian_phone = $request->input('guardian_phone');
+
+        $member->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Tạo thành viên thành công',
+            'data' => [
+                'member' => $member,
+            ],
+        ], 201);
     }
 }

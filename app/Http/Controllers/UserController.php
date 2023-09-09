@@ -2,19 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Admin\Controllers\UtilsCommonHelper;
+use App\Http\Models\Member;
+use App\Http\Models\User;
+use App\Traits\MemberFormattingTrait;
+use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function __construct()
+    use ResponseFormattingTrait, MemberFormattingTrait;
+
+    public function getById($id, UtilsCommonHelper $commonController)
     {
-        $this->middleware('auth');
+        $user = User::find($id);
+
+        if (!$user) {
+            $response = $this->_formatBaseResponse(404, null, 'Người dùng không được tìm thấy');
+            return response()->json($response, 404);
+        }
+
+        $member = Member::find($user->member_id);
+
+        if ($member) {
+            $transformedMember = $this->_formatMember($member, $commonController);
+        }
+
+        $transformedUser = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ];
+
+        $response = $this->_formatBaseResponse(200, [
+            'member' => $transformedMember,
+            'user' => $transformedUser,
+        ], 'Lấy dữ liệu thành công');
+
+        return response()->json($response);
     }
+
     /**
      * Get a validator for an incoming registration request.
      *
@@ -59,22 +90,6 @@ class UserController extends Controller
         return response()->json([
             'user' => $user,
             'verify' => $verify
-        ]);
-    }
-    public function updateAvatar(Request $request)
-    {
-        if ($files = $request->file('avatar')) {
-            $file = Storage::disk('s3')->put('images/avatar', $request->avatar, 'public');
-            return Response()->json([
-                "success" => true,
-                "file" => env('AWS_URL') . $file,
-                "path" => $file
-            ]);
-        }
-
-        return Response()->json([
-            "success" => false,
-            "file" => ''
         ]);
     }
 }

@@ -25,10 +25,13 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout');
 Route::post('register', 'Auth\RegisterController@register');
 
+Route::get('user/{id}', 'UserController@getById');
 Route::get('groups', 'GroupController@getList');
+Route::get('groups-by-tournament/{tournament_id}', 'GroupController@getListByTournament');
 Route::get('organisers', 'OrganiserController@getList');
 Route::get('common-code', 'CommonCodeController@getList');
 
+Route::post('register-member', 'MemberController@registerMember');
 Route::get('members/{id}', 'MemberController@getById');
 Route::post('members/search', [MemberController::class, 'searchMember']);
 
