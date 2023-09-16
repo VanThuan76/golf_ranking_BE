@@ -37,6 +37,7 @@ class LoginController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'token' => $user->remember_token,
                 ];
 
                 $response = $this->_formatBaseResponse(200, [
@@ -48,6 +49,7 @@ class LoginController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'token' => $user->remember_token,
                 ];
                 $response = $this->_formatBaseResponse(400, [
                     'member' => null,

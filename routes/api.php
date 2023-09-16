@@ -24,6 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout');
 Route::post('register', 'Auth\RegisterController@register');
+Route::post('reset-password', 'Auth\ResetPasswordController@reset');
 
 Route::get('user/{id}', 'UserController@getById');
 Route::get('groups', 'GroupController@getList');
@@ -43,9 +44,9 @@ Route::get('tournaments/{id}', 'TournamentController@getById');
 
 Route::get('tournaments-type', 'TournamentTypeController@getList');
 
+Route::get('auth/facebook', 'SocialController@redirect');
+Route::get('auth/facebook/callback', 'SocialController@loginCallback');
 
-Route::get('/auth/redirect/{provider}', 'SocialController@redirect');
-Route::get('/callback/{provider}', 'SocialController@callback');
 
 
 
