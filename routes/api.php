@@ -44,8 +44,8 @@ Route::get('tournaments/{id}', 'TournamentController@getById');
 
 Route::get('tournaments-type', 'TournamentTypeController@getList');
 
-Route::get('auth/facebook', 'SocialController@redirect');
-Route::get('auth/facebook/callback', 'SocialController@loginCallback');
+Route::get('auth/facebook/redirect', 'SocialController@redirectToFacebook');
+Route::get('auth/facebook/callback', 'SocialController@handleFacebookCallback');
 
 
 

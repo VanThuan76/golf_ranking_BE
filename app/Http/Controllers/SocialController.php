@@ -3,22 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\User;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialController extends Controller
 {
-    public function redirect()
+    public function redirectToFacebook()
     {
-        return Socialite::driver('facebook')->redirect();
+        return Socialite::driver('facebook')->stateless()->redirect();
     }
 
-    public function loginCallback()
+    public function handleFacebookCallback()
     {
         try {
-            // Gọi driver của Socialite cho Facebook
-            $facebookUser = Socialite::driver('facebook')->user();
+            $facebookUser = Socialite::driver('facebook')->stateless()->user();
             // Kiểm tra xem email đã tồn tại trong hệ thống chưa
             $user = User::where('email', $facebookUser->getEmail())->first();
             // Nếu người dùng chưa tồn tại, tạo mới
@@ -31,14 +29,12 @@ class SocialController extends Controller
             }
             // Đăng nhập người dùng
             Auth::login($user);
-            // Trả về thông tin người dùng đã đăng nhập thành công
-            return Response::json([
-                'user' => new User($user),
-                'facebook_user' => $facebookUser,
+            return response()->json([
+                'message' => 'Đăng nhập và đăng ký thành công.',
+                'user' => $user,
             ]);
         } catch (\Exception $e) {
-            // Xử lý lỗi nếu có
-            return Response::json([
+            return response()->json([
                 'error' => 'Đã xảy ra lỗi trong quá trình đăng nhập bằng Facebook.',
             ], 500);
         }
