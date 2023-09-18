@@ -6,30 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Http\Models\User;
 use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
     use ResponseFormattingTrait;
 
-    protected $redirectTo = '/';
-
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
-
     public function resetPassword(Request $request)
     {
-        $user = Auth::user();
-        if (!Hash::check($request->old_password, $user->password)) {
-            return redirect()->back()->with('error', 'Mật khẩu cũ không đúng.');
+        $userId = $request->input('user_id');
+        $loggedInUser = User::find($userId);
+        if (!$loggedInUser) {
+            return response()->json(['error' => 'Không tìm thấy người dùng.'], 404);
         }
-        $request->validate([]);
+        if (!Hash::check($request->old_password, $loggedInUser->password)) {
+            return response()->json(['error' => 'Mật khẩu cũ không đúng.'], 400);
+        }
+        if ($request->new_password !== $request->password_confirmation) {
+            return response()->json(['error' => 'Mật khẩu mới và xác nhận mật khẩu không khớp.'], 400);
+        }
 
-        $user->password = Hash::make($request->password);
-        $user->save();
-        return redirect('/')->with('success', 'Mật khẩu đã được đặt lại thành công.');
+        $loggedInUser->password = Hash::make($request->new_password);
+        $loggedInUser->save();
+        $response = $this->_formatBaseResponse(200, [], 'Mật khẩu đã được đặt lại thành công');
+        return response()->json($response);
     }
 }

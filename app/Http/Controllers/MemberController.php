@@ -7,6 +7,7 @@ use App\Http\Models\Member;
 use App\Traits\MemberFormattingTrait;
 use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
+use App\Http\Models\User;
 
 class MemberController extends Controller
 {
@@ -67,39 +68,46 @@ class MemberController extends Controller
             $totalPages
         ));
     }
-    public function registerMember(Request $request)
+    public function registerMember(Request $request, UtilsCommonHelper $commonController)
     {
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'handicap_vga' => 'required|string|max:255',
-                'gender' => 'required|int',
-                'date_of_birth' => 'required|string|max:255',
-                'nationality' => 'required|string|max:255',
-                'email' => 'required|email|unique:members,email|max:255',
-                'phone_number' => 'required|string|max:255',
-                'guardian_name' => 'required|string|max:255',
-                'relationship' => 'required|string|max:255',
-                'guardian_email' => 'required|email|max:255',
-                'guardian_phone' => 'required|string|max:255',
-            ]);
+        $validatedData = $request->validate([
+            'user_id' => 'required|int',
+            'name' => 'required|string|max:255',
+            'handicap_vga' => 'required|string|max:255',
+            'gender' => 'required|int',
+            'date_of_birth' => 'required|string|max:255',
+            'nationality' => 'required|string|max:255',
+            'email' => 'required|email|unique:member,email|max:255',
+            'phone_number' => 'required|string|max:255',
+            'guardian_name' => 'required|string|max:255',
+            'relationship' => 'required|string|max:255',
+            'guardian_email' => 'required|email|max:255',
+            'guardian_phone' => 'required|string|max:255',
+        ]);
 
-            $member = new Member();
-            $member->name = $validatedData['name'];
-            $member->handicap_vga = $validatedData['handicap_vga'];
-            $member->gender = $validatedData['gender'];
-            $member->date_of_birth = $validatedData['date_of_birth'];
-            $member->nationality = $validatedData['nationality'];
-            $member->email = $validatedData['email'];
-            $member->phone_number = $validatedData['phone_number'];
-            $member->guardian_name = $validatedData['guardian_name'];
-            $member->relationship = $validatedData['relationship'];
-            $member->guardian_email = $validatedData['guardian_email'];
-            $member->guardian_phone = $validatedData['guardian_phone'];
-            $member->save();
+        $member = new Member();
+        $member->name = $validatedData['name'];
+        $member->handicap_vga = $validatedData['handicap_vga'];
+        $member->gender = $validatedData['gender'];
+        $member->date_of_birth = $validatedData['date_of_birth'];
+        $member->nationality = $validatedData['nationality'];
+        $member->email = $validatedData['email'];
+        $member->phone_number = $validatedData['phone_number'];
+        $member->guardian_name = $validatedData['guardian_name'];
+        $member->relationship = $validatedData['relationship'];
+        $member->guardian_email = $validatedData['guardian_email'];
+        $member->guardian_phone = $validatedData['guardian_phone'];
+        $member->save();
 
-            return response()->json([
-                'message' => 'Tạo thành viên thành công',
-                'data' => $member,
-            ], 201);
+        $memberId = $member->id;
+            $user = User::find($validatedData['user_id']);
+            if ($user) {
+                $user->member_id = $memberId;
+                $user->save();
+            }
+
+        $member = $this->_formatMember($member, $commonController);
+        $response = $this->_formatBaseResponse(200, $member, 'Tạo thành viên thành công');
+        return response()->json($response);
     }
 }

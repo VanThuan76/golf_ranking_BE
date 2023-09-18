@@ -17,6 +17,19 @@ class UserController extends Controller
 {
     use ResponseFormattingTrait, MemberFormattingTrait;
 
+    public function checkEmailExists(Request $request)
+    {
+        $email = $request->input('email');
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            $response = $this->_formatBaseResponse(400, [], 'Địa chỉ email đã tồn tại');
+            return response()->json($response);
+        } else {
+            $response = $this->_formatBaseResponse(200, [], 'Địa chỉ email chưa tồn tại');
+            return response()->json($response);
+        }
+    }
+
     public function getById($id, UtilsCommonHelper $commonController)
     {
         $user = User::find($id);
@@ -26,10 +39,14 @@ class UserController extends Controller
             return response()->json($response, 404);
         }
 
-        $member = Member::find($user->member_id);
+        if ($user->member_id > 0) {
+            $member = Member::find($user->member_id);
 
-        if ($member) {
-            $transformedMember = $this->_formatMember($member, $commonController);
+            if ($member) {
+                $transformedMember = $this->_formatMember($member, $commonController);
+            }
+        } else {
+            $transformedMember = null;
         }
 
         $transformedUser = [
@@ -45,6 +62,7 @@ class UserController extends Controller
 
         return response()->json($response);
     }
+
 
     /**
      * Get a validator for an incoming registration request.

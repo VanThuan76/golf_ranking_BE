@@ -51,8 +51,8 @@ class LoginController extends Controller
                     'email' => $user->email,
                     'token' => $user->remember_token,
                 ];
-                $response = $this->_formatBaseResponse(400, [
-                    'member' => null,
+                $response = $this->_formatBaseResponse(200, [
+                    'member' => 0,
                     'user' => $transformedUser,
                 ], 'Thông tin thành viên không tồn tại');
             }

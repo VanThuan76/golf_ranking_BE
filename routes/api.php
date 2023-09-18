@@ -24,9 +24,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout');
 Route::post('register', 'Auth\RegisterController@register');
-Route::post('reset-password', 'Auth\ResetPasswordController@reset');
+Route::post('reset-password', 'Auth\ResetPasswordController@resetPassword');
 
 Route::get('user/{id}', 'UserController@getById');
+Route::post('check-email-exists', 'UserController@checkEmailExists');
+
 Route::get('groups', 'GroupController@getList');
 Route::get('groups-by-tournament/{tournament_id}', 'GroupController@getListByTournament');
 Route::get('organisers', 'OrganiserController@getList');
@@ -43,9 +45,6 @@ Route::post('tournaments/search', [TournamentController::class, 'searchTournamen
 Route::get('tournaments/{id}', 'TournamentController@getById');
 
 Route::get('tournaments-type', 'TournamentTypeController@getList');
-
-Route::get('auth/facebook/redirect', 'SocialController@redirectToFacebook');
-Route::get('auth/facebook/callback', 'SocialController@handleFacebookCallback');
 
 
 
