@@ -27,6 +27,7 @@ Route::post('register', 'Auth\RegisterController@register');
 Route::post('reset-password', 'Auth\ResetPasswordController@resetPassword');
 
 Route::get('user/{id}', 'UserController@getById');
+Route::get('userEmail/{email}', 'UserController@getUserByEmail');
 Route::post('check-email-exists', 'UserController@checkEmailExists');
 
 Route::get('groups', 'GroupController@getList');

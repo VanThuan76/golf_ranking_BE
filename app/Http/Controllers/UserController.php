@@ -63,6 +63,39 @@ class UserController extends Controller
         return response()->json($response);
     }
 
+    public function getUserByEmail($email, UtilsCommonHelper $commonController)
+    {
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            $response = $this->_formatBaseResponse(404, null, 'Người dùng không được tìm thấy');
+            return response()->json($response, 404);
+        }
+
+        if ($user->member_id > 0) {
+            $member = Member::find($user->member_id);
+
+            if ($member) {
+                $transformedMember = $this->_formatMember($member, $commonController);
+            }
+        } else {
+            $transformedMember = null;
+        }
+
+        $transformedUser = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ];
+
+        $response = $this->_formatBaseResponse(200, [
+            'member' => $transformedMember,
+            'user' => $transformedUser,
+        ], 'Lấy dữ liệu thành công');
+
+        return response()->json($response);
+    }
+
 
     /**
      * Get a validator for an incoming registration request.
