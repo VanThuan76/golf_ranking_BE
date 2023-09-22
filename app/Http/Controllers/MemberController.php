@@ -29,7 +29,7 @@ class MemberController extends Controller
 
     public function searchMember(Request $request, UtilsCommonHelper $commonController)
     {
-        $query = Member::query();
+        $query = Member::where('status', 1);
         $filters = $request->input('filters', []);
 
         foreach ($filters as $filter) {
@@ -73,15 +73,15 @@ class MemberController extends Controller
         $validatedData = $request->validate([
             'user_id' => 'required|int',
             'name' => 'required|string|max:255',
-            'handicap_vga' => 'required|string|max:255',
+            'handicap_vga' => 'nullable|string|max:255',
             'gender' => 'required|int',
             'date_of_birth' => 'required|string|max:255',
             'nationality' => 'required|string|max:255',
-            'email' => 'required|email|unique:member,email|max:255',
+            'email' => 'nullable|email|unique:member,email|max:255',
             'phone_number' => 'required|string|max:255',
             'guardian_name' => 'required|string|max:255',
             'relationship' => 'required|string|max:255',
-            'guardian_email' => 'required|email|max:255',
+            'guardian_email' => 'required|email|unique:member,email|max:255',
             'guardian_phone' => 'required|string|max:255',
         ]);
 
@@ -97,6 +97,12 @@ class MemberController extends Controller
         $member->relationship = $validatedData['relationship'];
         $member->guardian_email = $validatedData['guardian_email'];
         $member->guardian_phone = $validatedData['guardian_phone'];
+        if (isset($validatedData['handicap_vga'])) {
+            $member->handicap_vga = $validatedData['handicap_vga'];
+        }
+        if (isset($validatedData['guardian_email'])) {
+            $member->email = $validatedData['guardian_email'];
+        }
         $member->save();
 
         $memberId = $member->id;
