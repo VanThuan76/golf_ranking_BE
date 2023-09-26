@@ -14,6 +14,8 @@ Route::group([
 ], function (Router $router) {
     $router->get('/', 'HomeController@index');
     $router->get('/help', 'HelpController@index');
+    $router->resource('/category', CategoryController::class);
+    $router->resource('/news', NewsController::class);
     $router->resource('/common-code', CommonCodeController::class);
     $router->resource('/group', GroupController::class);
     $router->resource('/member', MemberController::class);

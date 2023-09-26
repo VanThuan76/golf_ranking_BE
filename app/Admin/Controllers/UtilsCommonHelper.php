@@ -5,7 +5,7 @@ namespace App\Admin\Controllers;
 use App\Http\Models\CommonCode;
 use App\Http\Models\TournamentGroup;
 use App\Http\Models\TournamentType;
-use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Str;
 
 class UtilsCommonHelper
 {
@@ -53,5 +53,24 @@ class UtilsCommonHelper
     public static function optionsTournamentGroup()
     {
         return TournamentGroup::where('status', 1)->pluck('name', 'id');
+    }
+    static function extractContent($title){
+        return strlen($title) < 30 ? $title : (substr($title, 0, 30). "...");
+    }
+    static function createSlug($title, $allSlugs){
+        $slug = Str::slug($title);
+
+        if (! $allSlugs->contains('slug', $slug)){
+            return $slug;
+        }
+
+        $i = 0;
+        do {
+            $i = $i + 1;
+            $newSlug = $slug.'-'.$i;
+            if (! $allSlugs->contains('slug', $newSlug)) {
+                return $newSlug;
+            }
+        } while (true);
     }
 }

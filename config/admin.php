@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Business',
+    'name' => 'VJGR Admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => "<p>Business</p>",
+    'logo' => "<p>VJGR Admin</p>",
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<b>Biz</b>',
+    'logo-mini' => '<b>VJGR</b>',
 
     /*
     |--------------------------------------------------------------------------
@@ -404,6 +404,21 @@ return [
     |
     */
     'extensions' => [
+        'ckeditor' => [
+        
+            //Set to false if you want to disable this extension
+            'enable' => true,
+            // Editor configuration
+            'config' => [
+                // "extraPlugins" => 'videodetector',
+                // "extraAllowedContent" => 'iframe[*]',
+                // 'filebrowserImageUploadUrl' => url('').'/admin/image/upload', // your url 
+                // 'extraPlugins' => [ 'justify' ]
+            ]
+        ],
+        'cropper' => [
+            'enable' => true,
+        ],
         'log-viewer' => [
             'route' => [
                 'domain' => env('APP_URL')

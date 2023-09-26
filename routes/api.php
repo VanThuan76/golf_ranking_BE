@@ -47,6 +47,12 @@ Route::get('tournaments/{id}', 'TournamentController@getById');
 
 Route::get('tournaments-type', 'TournamentTypeController@getList');
 
+Route::get('category', 'CategoryController@getList');
+Route::post('news/search', 'NewsController@searchNews');
+Route::get('news/{slug}', 'NewsController@getBySlug');
+
+
+
 
 
 

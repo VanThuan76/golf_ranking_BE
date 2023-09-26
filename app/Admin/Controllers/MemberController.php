@@ -43,8 +43,10 @@ class MemberController extends AdminController{
         $grid->column('counting_tournament', __('Số lần tham dự giải'));
         $grid->column('number_of_wins', __('Số lần vô địch'));
         $grid->column('best_rank', __('Xếp hạng cao nhất'));
-        $grid->column('relationship', __('Mối quan hệ'));
+        $grid->column('current_rank', __('Xếp hạng hiện tại'));
+        $grid->column('rank_change', __('Thay đổi hạng'));
         $grid->column('guardian_name', __('Tên người bảo trợ'));
+        $grid->column('relationship', __('Mối quan hệ'));
         $grid->column('guardian_phone', __('Số điện thoại người bảo trợ'));
         $grid->column('guardian_email', __('Email người bảo trợ'));
         $grid->column('status', __('Trạng thái'))->display(function ($status) {
@@ -56,7 +58,7 @@ class MemberController extends AdminController{
         $grid->column('updated_at', __('Ngày cập nhật'))->display(function ($updatedAt) {
             return ConstantHelper::dateFormatter($updatedAt);
         });  
-        $grid->model()->orderBy('id');
+        $grid->model()->orderBy('created_at');
         $grid->fixColumns(0, 0);
         $grid->disableExport();
         return $grid;
@@ -88,8 +90,10 @@ class MemberController extends AdminController{
         $show->field('counting_tournament', __('Số lần tham dự giải'));
         $show->field('number_of_wins', __('Số lần vô địch'));
         $show->field('best_rank', __('Vô địch hạng'));
-        $show->field('relationship', __('Mối quan hệ'));
+        $show->field('current_rank', __('Xếp hạng hiện tại'));
+        $show->field('rank_change', __('Thay đổi hạng'));
         $show->field('guardian_name', __('Tên người bảo trợ'));
+        $show->field('relationship', __('Mối quan hệ'));
         $show->field('guardian_phone', __('Số điện thoại người bảo trợ'));
         $show->field('guardian_email', __('Email người bảo trợ'));
         $show->field('status', __('Trạng thái'))->as(function ($status) {
@@ -124,8 +128,10 @@ class MemberController extends AdminController{
         $form->number('counting_tournament', __('Số lần tham dự giải'));
         $form->number('number_of_wins', __('Số lần vô địch'));
         $form->text('best_rank', __('Vô địch hạng'));
-        $form->text('relationship', __('Mối quan hệ'));
+        $form->number('current_rank', __('Xếp hạng hiện tại'));
+        $form->number('rank_change', __('Thay đổi hạng'));
         $form->text('guardian_name', __('Tên người bảo trợ'));
+        $form->text('relationship', __('Mối quan hệ'));
         $form->mobile('guardian_phone', __('Số điện thoại người bảo trợ'))->options(['mask' => '999 999 9999'])->required();
         $form->text('guardian_email', __('Email người bảo trợ'));
         $form->select('status', __('Trạng thái'))->options($statusOptions)->default($statusDefault)->required();
