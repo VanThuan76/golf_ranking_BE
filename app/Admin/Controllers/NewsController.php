@@ -10,8 +10,6 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Encore\Admin\Facades\Admin;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\UploadedFile;
 
 
 class NewsController extends AdminController
@@ -38,7 +36,7 @@ class NewsController extends AdminController
         $grid->column('description', __('Mô tả'))->display(function ($title) {
             return "<span>" . UtilsCommonHelper::extractContent($title) . "</span>";
         });
-        $grid->column('image', __('Ảnh'))->image(url(env("APP_URL")), 50, 50);
+        $grid->column('image', __('Ảnh'))->image(url(env("APP_URL") . '/storage'), 50, 50);
         $grid->column('author.name', __('Tác giả'));
         $grid->column('category.title', __('Thể loại'));
         $grid->column('status', __('Trạng thái'))->using(Constant::PAGE_STATUS)->sortable();
