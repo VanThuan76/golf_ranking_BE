@@ -62,7 +62,7 @@ class NewsController extends Controller
             'slug' => $article->slug,
             'description' => $article->description,
             'content' => $article->content,
-            'image' => url(env("APP_URL") . '/storage' . $article->image),
+            'image' => url(env("APP_URL") . '/storage/' . $article->image),
             'created_at' => $article->created_at,
             'updated_at' => $article->updated_at,
             'published_at' => $article->published_at,
