@@ -10,6 +10,9 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+
 
 class NewsController extends AdminController
 {
@@ -29,18 +32,18 @@ class NewsController extends AdminController
     {
         $grid = new Grid(new News());
 
-        $grid->column('title', __('Tiêu đề'))->style('max-width:200px;')->display(function ($title) {
-            return "<span>". UtilsCommonHelper::extractContent($title) . "</span>";
+        $grid->column('title', __('Tiêu đề'))->display(function ($title) {
+            return "<span>" . UtilsCommonHelper::extractContent($title) . "</span>";
         });
-        $grid->column('description', __('Mô tả'))->style('max-width:300px;')->display(function ($title) {
-            return "<span>". UtilsCommonHelper::extractContent($title) . "</span>";
+        $grid->column('description', __('Mô tả'))->display(function ($title) {
+            return "<span>" . UtilsCommonHelper::extractContent($title) . "</span>";
         });
-        $grid->column('image', __('Ảnh'))->image(url(env("AWS_URL")), 50, 50);
+        $grid->column('image', __('Ảnh'))->image(url(env("APP_URL")), 50, 50);
         $grid->column('author.name', __('Tác giả'));
         $grid->column('category.title', __('Thể loại'));
         $grid->column('status', __('Trạng thái'))->using(Constant::PAGE_STATUS)->sortable();
         $grid->column('slug', __('Link'))->display(function ($slug) {
-            return "<a href='".url('/page/'.$slug)."' target='_blank'>Link</span>";
+            return "<a href='" . url('/page/' . $slug) . "' target='_blank'>Link</span>";
         });
         $grid->column('created_at', __('Ngày tạo'));
         $grid->column('updated_at', __('Ngày cập nhật'));
@@ -85,7 +88,7 @@ class NewsController extends AdminController
         $form->text('title', __('Tiêu đề'))->required();
         $form->ckeditor('description', __('Mô tả'))->required();
         $form->ckeditor('content', __('Nội dung'))->required();
-        $form->image('image', __('Ảnh'))->insert(public_path('resources/watermark.png'), 'bottom-right', 30, 10);
+        $form->image('image', __('Ảnh'))->insert(public_path('resources/watermark.png'), 'bottom-right', 30, 10)->move('/images');
         $form->select('author_id', __('Tác giả'))->options(User::all()->pluck('name', 'id'))->default(Admin::user()->id)->setWidth(3, 2);
         $form->hidden('slug');
         $form->select('category_id', __('Danh mục'))->options(Category::all()->pluck('title', 'id'))->setWidth(3, 2)->required();
@@ -96,7 +99,7 @@ class NewsController extends AdminController
             $form->select('status', __('Status'))->options(Constant::PAGE_STATUS)->setWidth(3, 2)->default(0)->readonly();
         }
         $form->saving(function ($form) {
-            if (!($form->model()->id && $form->model()->title == $form->title)){
+            if (!($form->model()->id && $form->model()->title == $form->title)) {
                 $form->slug = UtilsCommonHelper::createSlug($form->title, News::get());
             }
         });
