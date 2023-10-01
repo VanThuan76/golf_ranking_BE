@@ -40,7 +40,7 @@ class NewsController extends Controller
         }
     }
 
-    $page = $request->input('page', 1);
+    $page = $request->input('page', 1) + 1;
     $size = $request->input('size', 10);
     $sorts = $request->input('sorts', []);
 

@@ -26,6 +26,14 @@ class MemberController extends Controller
         $response = $this->_formatBaseResponse(200, $transformedMember, 'Lấy dữ liệu thành công');
         return response()->json($response);
     }
+    public function getListNationality()
+    {
+        $nationalities = Member::pluck('nationality')->unique()->values()->all();
+
+        $response = $this->_formatBaseResponse(200, $nationalities, 'Lấy dữ liệu thành công');
+        return response()->json($response);
+    }
+
 
     public function searchMember(Request $request, UtilsCommonHelper $commonController)
     {
@@ -41,7 +49,7 @@ class MemberController extends Controller
             }
         }
 
-        $page = $request->input('page', 1);
+        $page = $request->input('page', 1) + 1;
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
 
@@ -106,11 +114,11 @@ class MemberController extends Controller
         $member->save();
 
         $memberId = $member->id;
-            $user = User::find($validatedData['user_id']);
-            if ($user) {
-                $user->member_id = $memberId;
-                $user->save();
-            }
+        $user = User::find($validatedData['user_id']);
+        if ($user) {
+            $user->member_id = $memberId;
+            $user->save();
+        }
 
         $member = $this->_formatMember($member, $commonController);
         $response = $this->_formatBaseResponse(200, $member, 'Tạo thành viên thành công');
