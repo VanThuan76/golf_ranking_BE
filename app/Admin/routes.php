@@ -23,6 +23,7 @@ Route::group([
     $router->resource('/tournament', TournamentController::class);
     $router->resource('/tournament-type', TournamentTypeController::class);
     $router->resource('/tournament-group', TournamentGroupController::class);
-    $router->resource('/tournament-detail', TournamentDetailController::class);
+    $router->resource('/offical-tournament-detail', TournamentDetailController::class);
+    $router->resource('/pre-tournament-detail', TournamentDetailDraftController::class);
     $router->resource('/tournament-summary', TournamentSummaryController::class);
 });

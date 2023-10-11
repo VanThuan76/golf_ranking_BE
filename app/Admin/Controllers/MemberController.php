@@ -120,10 +120,10 @@ class MemberController extends AdminController{
         $form->text('name', __('Họ và tên'))->required();
         $form->select('gender', __('Giới tính'))->options($genderOptions)->required();
         $form->date('date_of_birth', __('Ngày sinh'))->required();
-        $form->text('nationality', __('Quốc gia'));
+        $form->text('nationality', __('Mã quốc gia'))->help("Ví dụ: VN hoặc KR")->required();
         $form->text('email', __('Email'));
         $form->mobile('phone_number', __('Số điện thoại'))->options(['mask' => '999 999 9999'])->required();
-        $form->text('handicap_vga', __('handicap_vga'));
+        $form->text('handicap_vga', __('Handicap_vga'));
         $form->number('points', __('Điểm'));
         $form->number('counting_tournament', __('Số lần tham dự giải'));
         $form->number('number_of_wins', __('Số lần vô địch'));

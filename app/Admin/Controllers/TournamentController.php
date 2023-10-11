@@ -106,16 +106,28 @@ class TournamentController extends AdminController{
     protected function form()
     {
         $tournamentTypes = (new UtilsCommonHelper)->optionsTournamentType();
-        $tournamentGroups = (new UtilsCommonHelper)->optionsTournamentType();
+        $tournamentGroups = (new UtilsCommonHelper)->optionsTournamentGroup();
+        $organisers = (new UtilsCommonHelper)->optionsOrganiser();
 
         $statusOptions = (new UtilsCommonHelper)->commonCode("TournamentStatus", "description_vi", "value");
         $regionOptions = (new UtilsCommonHelper)->commonCode("Region", "description_vi", "value");
         $formatOptions = (new UtilsCommonHelper)->commonCode("Format", "description_vi", "value");
 
         $form = new Form(new Tournament());
-        $form->select('tournament_type_id', __('Loại giải'))->options($tournamentTypes)->required();
-        $form->select('tournament_group_id', __('Nhóm giải'))->options($tournamentGroups)->required();
-        $form->select('organiser_id', __('Tên ban tổ chức'))->options($statusOptions)->required();
+        if ($form->isEditing()) {
+            $id = request()->route()->parameter('tournament');
+            $tournamentTypeId = $form->model()->find($id)->getOriginal("tournament_type_id");
+            $tournamentGroupId = $form->model()->find($id)->getOriginal("tournament_group_id");
+            $organiserId = $form->model()->find($id)->getOriginal("organiser_id");
+
+            $form->select('tournament_type_id', __('Loại giải'))->options($tournamentTypes)->default($tournamentTypeId)->required();
+            $form->select('tournament_group_id', __('Nhóm giải'))->options($tournamentGroups)->default($tournamentGroupId)->required();
+            $form->select('organiser_id', __('Tên ban tổ chức'))->options($organisers)->default($organiserId)->required();
+        }else{
+            $form->select('tournament_type_id', __('Loại giải'))->options($tournamentTypes)->required();
+            $form->select('tournament_group_id', __('Nhóm giải'))->options($tournamentGroups)->required();
+            $form->select('organiser_id', __('Tên ban tổ chức'))->options($organisers)->required();
+        }
         $form->text('name', __('Tên giải'));
         $form->select('region', __('Khu vực'))->options($regionOptions)->required();
         $form->text('country', __('Quốc gia'));

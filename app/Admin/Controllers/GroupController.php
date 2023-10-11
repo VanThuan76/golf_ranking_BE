@@ -84,7 +84,7 @@ class GroupController extends AdminController{
         $genderOptions = (new UtilsCommonHelper)->commonCode("Gender", "description_vi", "value");
 
         $form = new Form(new Group());
-        $form->text('name', __('Tên nhóm'))->required();
+        $form->text('name', __('Tên nhóm'))->required()->help("Ví dụ: U18");
         $form->select('gender', __('Giới tính'))->options($genderOptions)->required();
         $form->number('from_age', __('Tuổi nhỏ nhất'));
         $form->number('to_age', __('Tên lớn nhất'));

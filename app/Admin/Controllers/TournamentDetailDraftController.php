@@ -3,8 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Controllers\ConstantHelper;
-use App\Http\Models\TournamentDetail;
-use App\Imports\TournamentDetailImport;
+use App\Http\Models\TournamentDetailDraft;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -12,7 +11,7 @@ use Encore\Admin\Show;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
-class TournamentDetailController extends AdminController
+class TournamentDetailDraftController extends AdminController
 {
     /**
      * Title for current resource.
@@ -28,15 +27,12 @@ class TournamentDetailController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new TournamentDetail());
+        $grid = new Grid(new TournamentDetailDraft());
 
         $grid->column('tournament.name', __('Tên giải'));
         $grid->column('member.name', __('Tên thành viên'));
         $grid->column('round_number', __('Số vòng'));
         $grid->column('score', __('Điểm'));
-        $grid->column('status', __('Trạng thái'))->display(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "grid");
-        });
         $grid->column('created_at', __('Ngày tạo'))->display(function ($createdAt) {
             return ConstantHelper::dateFormatter($createdAt);
         });
@@ -56,15 +52,12 @@ class TournamentDetailController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(TournamentDetail::findOrFail($id));
+        $show = new Show(TournamentDetailDraft::findOrFail($id));
 
         $show->field('tournament.name', __('Tên giải'));
         $show->field('member.name', __('Tên thành viên'));
         $show->field('round_number', __('Số vòng'));
         $show->field('score', __('Điểm'));
-        $show->field('status', __('Trạng thái'))->as(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "detail");
-        });
         $show->field('created_at', __('Ngày tạo'));
         $show->field('updated_at', __('Ngày cập nhật'));
 
@@ -79,9 +72,36 @@ class TournamentDetailController extends AdminController
     protected function form()
     {
         $tournaments = (new UtilsCommonHelper)->optionsTournament();
-        $form = new Form(new TournamentDetail());
+        $form = new Form(new TournamentDetailDraft());
         $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->required();
-        $form->file('csv_file', __('File CSV'))->move('csv')->required();
+        $form->file('csv_file', __('File CSV'))->rules('required|mimes:csv,txt');
+        $form->saving(function ($form) {
+            $form->importCsv();
+        });
         return $form;
+    }
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|mimes:csv,txt',
+        ]);
+
+        $file = $request->file('csv_file');
+
+        // Kiểm tra xem file có tồn tại không
+        if ($file && $file->isValid()) {
+            Excel::filter('chunk')->load($file)->chunk(250, function ($results) {
+                foreach ($results->toArray() as $row) {
+                    TournamentDetailDraft::updateOrCreate(
+                        ['vjgr_code' => $row[0]],
+                        ['round_number' => $row[1], 'score' => $row[2], 'to_par' => $row[3]]
+                    );
+                }
+            });
+            return redirect()->route('/');
+        } else {
+            // Xử lý khi file không hợp lệ
+            return redirect()->back()->withErrors(['csv_file' => 'File không hợp lệ']);
+        }
     }
 }

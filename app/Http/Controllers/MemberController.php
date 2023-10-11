@@ -8,6 +8,7 @@ use App\Traits\MemberFormattingTrait;
 use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
 use App\Http\Models\User;
+use Illuminate\Support\Carbon;
 
 class MemberController extends Controller
 {
@@ -97,7 +98,7 @@ class MemberController extends Controller
         $member->name = $validatedData['name'];
         $member->handicap_vga = $validatedData['handicap_vga'];
         $member->gender = $validatedData['gender'];
-        $member->date_of_birth = $validatedData['date_of_birth'];
+        $member->date_of_birth = Carbon::createFromFormat('d/m/Y', $validatedData['date_of_birth'])->format('Y-m-d');
         $member->nationality = $validatedData['nationality'];
         $member->email = $validatedData['email'];
         $member->phone_number = $validatedData['phone_number'];

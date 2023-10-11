@@ -3,6 +3,8 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Models\CommonCode;
+use App\Http\Models\Organiser;
+use App\Http\Models\Tournament;
 use App\Http\Models\TournamentGroup;
 use App\Http\Models\TournamentType;
 use Illuminate\Support\Str;
@@ -36,15 +38,19 @@ class UtilsCommonHelper
     }
     public static function statusFormFormatter()
     {
-        return self::commonCode("Core", "Status", "description_vi", "value");
+        return self::commonCode("status", "description_vi", "value");
     }
     public static function statusGridFormatter($status)
     {
-        return self::statusFormatter($status, "Core", "grid");
+        return self::statusFormatter($status, "grid");
     }
     public static function statusDetailFormatter($status)
     {
         return self::statusFormatter($status, "Core", "detail");
+    }
+    public static function optionsTournament()
+    {
+        return Tournament::where('status', 1)->pluck('name', 'id');
     }
     public static function optionsTournamentType()
     {
@@ -53,6 +59,10 @@ class UtilsCommonHelper
     public static function optionsTournamentGroup()
     {
         return TournamentGroup::where('status', 1)->pluck('name', 'id');
+    }
+    public static function optionsOrganiser()
+    {
+        return Organiser::where('status', 1)->pluck('name', 'id');
     }
     static function extractContent($title){
         return strlen($title) < 30 ? $title : (substr($title, 0, 30). "...");

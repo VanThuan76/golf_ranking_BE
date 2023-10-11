@@ -83,7 +83,13 @@ class TournamentTypeController extends AdminController{
         $statusDefault = $statusOptions->keys()->first();
 
         $form = new Form(new TournamentType());
-        $form->select('tournament_group_id', __('Nhóm giải'))->options($tournamentGroups)->required();
+        if ($form->isEditing()) {
+            $id = request()->route()->parameter('tournament_type');
+            $tournamentGroupId = $form->model()->find($id)->getOriginal("tournament_group_id");
+            $form->select('tournament_group_id', __('Nhóm giải'))->options($tournamentGroups)->default($tournamentGroupId)->required();
+        }else{
+            $form->select('tournament_group_id', __('Nhóm giải'))->options($tournamentGroups)->required();
+        }
         $form->text('name', __('Loại giải'));
         $form->number('coefficient', __('Hệ số'));
         $form->number('total_point', __('Tổng điểm'));
