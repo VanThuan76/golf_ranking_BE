@@ -84,7 +84,7 @@ class MemberController extends Controller
             'name' => 'required|string|max:255',
             'handicap_vga' => 'nullable|string|max:255',
             'gender' => 'required|int',
-            'date_of_birth' => 'required|string|max:255',
+            'date_of_birth' => 'required|date_format:d/m/Y H:i:s|max:255',
             'nationality' => 'required|string|max:255',
             'email' => 'nullable|email|unique:member,email|max:255',
             'phone_number' => 'required|string|max:255',
@@ -98,7 +98,7 @@ class MemberController extends Controller
         $member->name = $validatedData['name'];
         $member->handicap_vga = $validatedData['handicap_vga'];
         $member->gender = $validatedData['gender'];
-        $member->date_of_birth = Carbon::createFromFormat('d/m/Y', $validatedData['date_of_birth'])->format('Y-m-d');
+        $member->date_of_birth = Carbon::createFromFormat('d/m/Y H:i:s', $validatedData['date_of_birth'])->format('Y-m-d H:i:s');
         $member->nationality = $validatedData['nationality'];
         $member->email = $validatedData['email'];
         $member->phone_number = $validatedData['phone_number'];
