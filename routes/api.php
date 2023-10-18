@@ -36,6 +36,7 @@ Route::get('organisers', 'OrganiserController@getList');
 Route::get('common-code', 'CommonCodeController@getList');
 
 Route::post('register-member', 'MemberController@registerMember');
+Route::put('update-member/{memberId}', 'MemberController@updateMember');
 Route::get('members/{id}', 'MemberController@getById');
 Route::post('members/search', [MemberController::class, 'searchMember']);
 Route::get('nationality-members', 'MemberController@getListNationality');
