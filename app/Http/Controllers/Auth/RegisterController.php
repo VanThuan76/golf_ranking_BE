@@ -23,11 +23,17 @@ class RegisterController extends Controller
 
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+        $validator = Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
+            'password' => ['required', 'string', 'min:6', 'confirmed', 'regex:/^[a-zA-Z0-9]+$/'],
         ]);
+        if ($data['password'] != $data['password_confirmation']) {
+            $validator->after(function ($validator) {
+                $validator->errors()->add('password_confirmation', 'Mật khẩu xác nhận không giống với mật khẩu.');
+            });
+        }
+        return $validator;
     }
 
     protected function create(array $data)
@@ -45,7 +51,7 @@ class RegisterController extends Controller
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
-            $response = $this->_formatBaseResponse(400, null, 'Validation failed', $validator->errors());
+            $response = $this->_formatBaseResponse(400, null, $validator->errors());
             return response()->json($response, 400);
         }
 
