@@ -34,7 +34,18 @@ class MemberController extends Controller
         $response = $this->_formatBaseResponse(200, $nationalities, 'Lấy dữ liệu thành công');
         return response()->json($response);
     }
-
+    public function checkHandicapVgaExists(Request $request)
+    {
+        $handicapVga = $request->input('handicapVga');
+        $member = Member::where('handicap_vga', $handicapVga)->first();
+        if ($member) {
+            $response = $this->_formatBaseResponse(400, [], 'Mã handicap VGA đã tồn tại');
+            return response()->json($response);
+        } else {
+            $response = $this->_formatBaseResponse(200, [], 'Mã handicap VGA chưa tồn tại');
+            return response()->json($response);
+        }
+    }
 
     public function searchMember(Request $request, UtilsCommonHelper $commonController)
     {
@@ -108,9 +119,6 @@ class MemberController extends Controller
         $member->guardian_phone = $validatedData['guardian_phone'];
         if (isset($validatedData['handicap_vga'])) {
             $member->handicap_vga = $validatedData['handicap_vga'];
-        }
-        if (isset($validatedData['guardian_email'])) {
-            $member->email = $validatedData['guardian_email'];
         }
         $member->save();
 

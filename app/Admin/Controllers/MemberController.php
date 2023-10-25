@@ -117,6 +117,7 @@ class MemberController extends AdminController{
         $genderOptions = (new UtilsCommonHelper)->commonCode("Gender", "description_vi", "value");
 
         $form = new Form(new Member());
+        
         $form->text('name', __('Họ và tên'))->required();
         $form->select('gender', __('Giới tính'))->options($genderOptions)->required();
         $form->date('date_of_birth', __('Ngày sinh'))->required();
@@ -135,6 +136,13 @@ class MemberController extends AdminController{
         $form->mobile('guardian_phone', __('Số điện thoại người bảo trợ'))->options(['mask' => '999 999 9999'])->required();
         $form->text('guardian_email', __('Email người bảo trợ'));
         $form->select('status', __('Trạng thái'))->options($statusOptions)->default($statusDefault)->required();
+
+        $form->saved(function (Form $form) {
+            if ($form->model()->status == 1) {
+                $vjgrCode = "VJGR" . sprintf('%04d', $form->model()->id);
+                Member::where('id', $form->model()->id)->update(['vjgr_code' => $vjgrCode]);
+            }
+        });
         return $form;
     }
 }

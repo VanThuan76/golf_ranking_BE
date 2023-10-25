@@ -40,7 +40,7 @@ Route::put('update-member/{memberId}', 'MemberController@updateMember');
 Route::get('members/{id}', 'MemberController@getById');
 Route::post('members/search', [MemberController::class, 'searchMember']);
 Route::get('nationality-members', 'MemberController@getListNationality');
-
+Route::post('check-handicap-vga-exists', 'MemberController@checkHandicapVgaExists');
 
 Route::post('tournament-summary', 'TournamentSummaryController@getList');
 Route::post('tournament-detail', 'TournamentDetailController@getList');
