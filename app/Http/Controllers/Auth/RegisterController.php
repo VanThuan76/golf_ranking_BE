@@ -26,7 +26,7 @@ class RegisterController extends Controller
         $validator = Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
-            'password' => ['required', 'string', 'min:6', 'confirmed', 'regex:/^[a-zA-Z0-9]+$/'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
         if ($data['password'] != $data['password_confirmation']) {
             $validator->after(function ($validator) {
