@@ -51,7 +51,8 @@ class MemberController extends AdminController{
         $grid->column('guardian_email', __('Email người bảo trợ'));
         $grid->column('status', __('Trạng thái'))->display(function ($status) {
             return UtilsCommonHelper::statusFormatter($status, "grid");
-        });  
+        });
+        $grid->column('reason', __('Lý do từ chối'));
         $grid->column('created_at', __('Ngày tạo'))->display(function ($createdAt) {
             return ConstantHelper::dateFormatter($createdAt);
         });        
@@ -99,6 +100,7 @@ class MemberController extends AdminController{
         $show->field('status', __('Trạng thái'))->as(function ($status) {
             return UtilsCommonHelper::statusFormatter($status, "Core", "detail");
         });
+        $show->field('reason', __('Lý do từ chối'));
         $show->field('created_at', __('Ngày tạo'));
         $show->field('updated_at', __('Ngày cập nhật'));
 
@@ -136,7 +138,17 @@ class MemberController extends AdminController{
         $form->mobile('guardian_phone', __('Số điện thoại người bảo trợ'))->options(['mask' => '999 999 9999'])->required();
         $form->text('guardian_email', __('Email người bảo trợ'));
         $form->select('status', __('Trạng thái'))->options($statusOptions)->default($statusDefault)->required();
+        $form->textarea('reason', __('Lý do từ chối'))->help("Chỉ điền khi bị từ chối");
 
+        //Before save
+        $form->saving(function (Form $form) {
+            if($form->status == 2) {
+                if($form->reason == "") {
+                    throw new \Exception('Chưa điền lý do từ chối');
+                }
+            }
+        });
+        //After save
         $form->saved(function (Form $form) {
             if ($form->model()->status == 1) {
                 $vjgrCode = "VJGR" . sprintf('%04d', $form->model()->id);

@@ -32,7 +32,13 @@ class UtilsCommonHelper
             ->where('value', $result)
             ->first();
         if ($commonCode && $isGrid === "grid") {
-            return $result === 1 ? "<span class='label label-success'>$commonCode->description_vi</span>" : "<span class='label label-danger'>$commonCode->description_vi</span>";
+            if($result == 1){
+                return "<span class='label label-success'>$commonCode->description_vi</span>";
+            }else if($result == 2){
+                return "<span class='label label-warning'>$commonCode->description_vi</span>";
+            }else{
+                return "<span class='label label-danger'>$commonCode->description_vi</span>";
+            }
         }
         return $commonCode->description_vi;
     }
@@ -64,21 +70,23 @@ class UtilsCommonHelper
     {
         return Organiser::where('status', 1)->pluck('name', 'id');
     }
-    static function extractContent($title){
-        return strlen($title) < 30 ? $title : (substr($title, 0, 30). "...");
+    static function extractContent($title)
+    {
+        return strlen($title) < 30 ? $title : (substr($title, 0, 30) . "...");
     }
-    static function createSlug($title, $allSlugs){
+    static function createSlug($title, $allSlugs)
+    {
         $slug = Str::slug($title);
 
-        if (! $allSlugs->contains('slug', $slug)){
+        if (!$allSlugs->contains('slug', $slug)) {
             return $slug;
         }
 
         $i = 0;
         do {
             $i = $i + 1;
-            $newSlug = $slug.'-'.$i;
-            if (! $allSlugs->contains('slug', $newSlug)) {
+            $newSlug = $slug . '-' . $i;
+            if (!$allSlugs->contains('slug', $newSlug)) {
                 return $newSlug;
             }
         } while (true);
