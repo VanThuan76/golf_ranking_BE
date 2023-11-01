@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Admin\Controllers\UtilsCommonHelper;
-use App\Http\Models\Member;
-use App\Http\Models\Tournament;
 use App\Http\Models\TournamentSummary;
 use App\Traits\MemberFormattingTrait;
 use App\Traits\ResponseFormattingTrait;

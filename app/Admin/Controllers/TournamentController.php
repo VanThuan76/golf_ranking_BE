@@ -89,7 +89,7 @@ class TournamentController extends AdminController{
         $show->field('format', __('Hình thức thi đấu'))->as(function ($format) {
             return UtilsCommonHelper::commonCodeGridFormatter("Format", "description_vi", $format);
         });
-        $show->field('status', __('Trạng thái'))->display(function ($status) {
+        $show->field('status', __('Trạng thái'))->as(function ($status) {
             return UtilsCommonHelper::commonCodeGridFormatter("TournamentStatus", "description_vi", $status);
         });
         $show->field('created_at', __('Ngày tạo'));

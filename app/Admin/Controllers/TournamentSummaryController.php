@@ -15,7 +15,7 @@ class TournamentSummaryController extends AdminController{
      *
      * @var string
      */
-    protected $title = 'Nhóm giải đấu';
+    protected $title = 'Tổng hợp giải đấu';
 
     /**
      * Make a grid builder.
@@ -33,7 +33,7 @@ class TournamentSummaryController extends AdminController{
         $grid->column('total_score', __('Toàn bộ điểm'));
         $grid->column('point', __('Điểm'));
         $grid->column('status', __('Trạng thái'))->display(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "grid");
+            return UtilsCommonHelper::commonCodeGridFormatter('TournamentStatus', 'description_vi', $status);
         });  
         $grid->column('created_at', __('Ngày tạo'))->display(function ($createdAt) {
             return ConstantHelper::dateFormatter($createdAt);
@@ -63,7 +63,7 @@ class TournamentSummaryController extends AdminController{
         $show->field('total_score', __('Toàn bộ điểm'));
         $show->field('point', __('Điểm'));
         $show->field('status', __('Trạng thái'))->as(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "Core", "detail");
+            return UtilsCommonHelper::commonCodeGridFormatter('TournamentStatus', 'description_vi', $status);
         });
         $show->field('created_at', __('Ngày tạo'));
         $show->field('updated_at', __('Ngày cập nhật'));
@@ -78,11 +78,26 @@ class TournamentSummaryController extends AdminController{
      */
     protected function form()
     {
-        $statusOptions = (new UtilsCommonHelper)->statusFormFormatter();
+        $tournaments = (new UtilsCommonHelper)->optionsTournament();
+        $members = (new UtilsCommonHelper)->optionsMember();
+        $statusOptions = (new UtilsCommonHelper)->statusCustomizeFormFormatter("TournamentStatus");
         $statusDefault = $statusOptions->keys()->first();
 
         $form = new Form(new TournamentSummary());
-        $form->text('name', __('Nhóm giải'));
+        if($form->isEditing()){
+            $id = request()->route()->parameter('tournament_summary');
+            $tournamentId = $form->model()->find($id)->getOriginal("tournament_id");
+            $memberId = $form->model()->find($id)->getOriginal("member_id");
+            $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->default($tournamentId)->required();
+            $form->select('member_id', __('Tên thành viên'))->options($members)->default($memberId)->required();
+            $form->number('finish', __('Hoàn thành'));
+            $form->number('to_par', __('to_par'));
+            $form->number('total_score', __('Toàn bộ điểm'));
+            $form->number('point', __('Điểm'));
+        }else{
+            $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->required();
+        }
+        
         $form->select('status', __('Trạng thái'))->options($statusOptions)->default($statusDefault)->required();
         return $form;
     }

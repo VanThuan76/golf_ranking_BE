@@ -3,14 +3,22 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Models\CommonCode;
+use App\Http\Models\Member;
 use App\Http\Models\Organiser;
 use App\Http\Models\Tournament;
 use App\Http\Models\TournamentGroup;
 use App\Http\Models\TournamentType;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class UtilsCommonHelper
 {
+    public static function dateFormatter($date)
+    {
+        $carbonDate = Carbon::parse($date)->timezone(Config::get('app.timezone'));
+        return $carbonDate->format('d/m/Y');
+    }
     public static function commonCode($type, $description, $value)
     {
         $commonCode = CommonCode::where('type', $type)
@@ -46,6 +54,10 @@ class UtilsCommonHelper
     {
         return self::commonCode("status", "description_vi", "value");
     }
+    public static function statusCustomizeFormFormatter($statusCustomize)
+    {
+        return self::commonCode($statusCustomize, "description_vi", "value");
+    }
     public static function statusGridFormatter($status)
     {
         return self::statusFormatter($status, "grid");
@@ -57,6 +69,10 @@ class UtilsCommonHelper
     public static function optionsTournament()
     {
         return Tournament::where('status', 1)->pluck('name', 'id');
+    }
+    public static function optionsMember()
+    {
+        return Member::where('status', 1)->pluck('name', 'id');
     }
     public static function optionsTournamentType()
     {

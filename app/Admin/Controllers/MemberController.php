@@ -115,6 +115,7 @@ class MemberController extends AdminController{
     protected function form()
     {
         $statusOptions = (new UtilsCommonHelper)->statusFormFormatter();
+        $nationalityOptions = (new UtilsCommonHelper)->commonCode("nationality", "description_vi", "value");
         $statusDefault = $statusOptions->keys()->first();
         $genderOptions = (new UtilsCommonHelper)->commonCode("Gender", "description_vi", "value");
 
@@ -124,6 +125,7 @@ class MemberController extends AdminController{
         $form->select('gender', __('Giới tính'))->options($genderOptions)->required();
         $form->date('date_of_birth', __('Ngày sinh'))->required();
         $form->text('nationality', __('Mã quốc gia'))->help("Ví dụ: VN hoặc KR")->required();
+        // $form->select('nationality', __('Quốc gia'))->options($nationalityOptions)->required();
         $form->text('email', __('Email'));
         $form->mobile('phone_number', __('Số điện thoại'))->options(['mask' => '999 999 9999'])->required();
         $form->text('handicap_vga', __('Handicap_vga'));

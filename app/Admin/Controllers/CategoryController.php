@@ -27,10 +27,13 @@ class CategoryController extends AdminController
     {
         $grid = new Grid(new Category());
 
-        $grid->column('id', __('Id'));
         $grid->column('title', __('Tiêu đề'));
-        $grid->column('created_at', __('Ngày tạo'));
-        $grid->column('updated_at', __('Ngày cập nhật'));
+        $grid->column('created_at', __('Ngày tạo'))->display(function ($createdAt){
+            return UtilsCommonHelper::dateFormatter($createdAt);
+        });
+        $grid->column('updated_at', __('Ngày cập nhật'))->display(function ($createdAt){
+            return UtilsCommonHelper::dateFormatter($createdAt);
+        });
 
         return $grid;
     }

@@ -33,8 +33,8 @@ class GroupController extends AdminController{
         $grid->column('from_age', __('Tuổi nhỏ nhất'))->label('default');
         $grid->column('to_age', __('Tên lớn nhất'))->label('default');
         $grid->column('status', __('Trạng thái'))->display(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "Core", "grid");
-        });  
+            return UtilsCommonHelper::statusFormatter($status, "grid");
+        });
         $grid->column('created_at', __('Ngày tạo'))->display(function ($createdAt) {
             return ConstantHelper::dateFormatter($createdAt);
         });        
@@ -64,7 +64,7 @@ class GroupController extends AdminController{
         $show->field('from_age', __('Tuổi nhỏ nhất'));
         $show->field('to_age', __('Tên lớn nhất'));
         $show->field('status', __('Trạng thái'))->as(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "Core", "detail");
+            return UtilsCommonHelper::statusFormatter($status, "Core");
         });
         $show->field('created_at', __('Ngày tạo'));
         $show->field('updated_at', __('Ngày cập nhật'));

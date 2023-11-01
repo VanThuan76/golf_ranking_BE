@@ -19,7 +19,7 @@ class TournamentDetailController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Nhóm giải đấu';
+    protected $title = 'Chi tiết giải đấu';
 
     /**
      * Make a grid builder.
@@ -81,7 +81,9 @@ class TournamentDetailController extends AdminController
         $tournaments = (new UtilsCommonHelper)->optionsTournament();
         $form = new Form(new TournamentDetail());
         $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->required();
-        $form->file('csv_file', __('File CSV'))->move('csv')->required();
+        if($form->isCreating()){
+            $form->file('csv_file', __('File CSV'))->move('csv')->required();
+        }
         return $form;
     }
 }

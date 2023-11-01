@@ -18,7 +18,7 @@ class TournamentDetailDraftController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Nhóm giải đấu';
+    protected $title = 'Chi tiết giải đấu sơ bộ';
 
     /**
      * Make a grid builder.
@@ -72,9 +72,20 @@ class TournamentDetailDraftController extends AdminController
     protected function form()
     {
         $tournaments = (new UtilsCommonHelper)->optionsTournament();
+        $members = (new UtilsCommonHelper)->optionsMember();
         $form = new Form(new TournamentDetailDraft());
-        $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->required();
-        $form->file('csv_file', __('File CSV'))->rules('required|mimes:csv,txt');
+        if($form->isCreating()){
+            $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->required();
+            $form->file('csv_file', __('File CSV'))->rules('required|mimes:csv,txt');
+        }else{
+            $id = request()->route()->parameter('pre_tournament_detail');
+            $tournamentId = $form->model()->find($id)->getOriginal("tournament_id");
+            $memberId = $form->model()->find($id)->getOriginal("member_id");
+            $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->default($tournamentId)->required();
+            $form->select('member_id', __('Tên thành viên'))->options($members)->default($memberId)->required();
+            $form->number('round_number', __('Số vòng'));
+            $form->number('score', __('Điểm'));
+        }
         $form->saving(function ($form) {
             $form->importCsv();
         });

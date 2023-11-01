@@ -28,7 +28,7 @@ class NewsController extends Controller
     }
     public function searchNews(Request $request)
     {
-    $query = News::query();
+    $query = News::query()->where('status', 1);
     $filters = $request->input('filters', []);
 
     foreach ($filters as $filter) {

@@ -31,8 +31,8 @@ class OrganiserController extends AdminController{
         $grid->column('phone_number', __('Số điện thoại'));
         $grid->column('contact_person', __('Người liên hệ'));
         $grid->column('status', __('Trạng thái'))->display(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "Core", "grid");
-        });  
+            return UtilsCommonHelper::statusFormatter($status, "grid");
+        });
         $grid->column('created_at', __('Ngày tạo'))->display(function ($createdAt) {
             return ConstantHelper::dateFormatter($createdAt);
         });        
@@ -59,7 +59,7 @@ class OrganiserController extends AdminController{
         $show->field('phone_number', __('Số điện thoại'));
         $show->field('contact_person', __('Người liên hệ'));
         $show->field('status', __('Trạng thái'))->as(function ($status) {
-            return UtilsCommonHelper::statusFormatter($status, "Core", "detail");
+            return UtilsCommonHelper::statusFormatter($status, "Core");
         });
         $show->field('created_at', __('Ngày tạo'));
         $show->field('updated_at', __('Ngày cập nhật'));
