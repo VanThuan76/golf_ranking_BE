@@ -9,7 +9,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use Excel;
 
 class TournamentDetailDraftController extends AdminController
 {
@@ -74,10 +74,10 @@ class TournamentDetailDraftController extends AdminController
         $tournaments = (new UtilsCommonHelper)->optionsTournament();
         $members = (new UtilsCommonHelper)->optionsMember();
         $form = new Form(new TournamentDetailDraft());
-        if($form->isCreating()){
+        if ($form->isCreating()) {
             $form->select('tournament_id', __('Giải đấu'))->options($tournaments)->required();
             $form->file('csv_file', __('File CSV'))->rules('required|mimes:csv,txt');
-        }else{
+        } else {
             $id = request()->route()->parameter('pre_tournament_detail');
             $tournamentId = $form->model()->find($id)->getOriginal("tournament_id");
             $memberId = $form->model()->find($id)->getOriginal("member_id");
@@ -87,31 +87,26 @@ class TournamentDetailDraftController extends AdminController
             $form->number('score', __('Điểm'));
         }
         $form->saving(function ($form) {
-            $form->importCsv();
+            $this->importCsv(request());
         });
         return $form;
     }
     public function importCsv(Request $request)
     {
-        $request->validate([
-            'csv_file' => 'required|mimes:csv,txt',
-        ]);
-
         $file = $request->file('csv_file');
-
-        // Kiểm tra xem file có tồn tại không
         if ($file && $file->isValid()) {
             Excel::filter('chunk')->load($file)->chunk(250, function ($results) {
-                foreach ($results->toArray() as $row) {
-                    TournamentDetailDraft::updateOrCreate(
-                        ['vjgr_code' => $row[0]],
-                        ['round_number' => $row[1], 'score' => $row[2], 'to_par' => $row[3]]
-                    );
+                dd($results);
+                $tournamentDetailDraft = TournamentDetailDraft::get();
+                foreach ($results as $row) {
+                    $tournamentDetailDraft['vjgr_code'] = $row[0];
+                    $tournamentDetailDraft['round_number'] = $row[1];
+                    $tournamentDetailDraft['score'] = $row[2];
+                    $tournamentDetailDraft['to_par'] = $row[3];
                 }
+                $tournamentDetailDraft->save();
             });
-            return redirect()->route('/');
         } else {
-            // Xử lý khi file không hợp lệ
             return redirect()->back()->withErrors(['csv_file' => 'File không hợp lệ']);
         }
     }
