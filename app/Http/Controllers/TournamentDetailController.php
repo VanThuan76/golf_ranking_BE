@@ -26,7 +26,7 @@ class TournamentDetailController extends Controller
             }
         }
 
-        $tournamentDetails = TournamentDetail::orderBy($sorts[0]['field'], $sorts[0]['direction'])
+        $tournamentDetails = TournamentDetail::where('tournament_id', $tournamentId)->orderBy($sorts[0]['field'], $sorts[0]['direction'])
             ->paginate($size, ['*'], 'page', $page);
 
         $transformedTournamentDetails = [];
