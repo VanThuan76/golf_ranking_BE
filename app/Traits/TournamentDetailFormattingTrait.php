@@ -10,10 +10,10 @@ use App\Http\Models\TournamentSummary;
 trait TournamentDetailFormattingTrait
 {
     use TournamentFormattingTrait;
-    private function _formatTournamentDetail($tournamentDetail,  UtilsCommonHelper $commonController)
+    private function _formatTournamentDetail($tournamentDetail, $tournamentId, UtilsCommonHelper $commonController)
     {
         $tournamentSummary = TournamentSummary::all()->keyBy('id');
-        if ($tournamentSummaryRecord = $tournamentSummary->get($tournamentDetail->tournament_id)) {
+        if ($tournamentSummaryRecord = $tournamentSummary->get($tournamentId ?? $tournamentDetail->tournament_id)) {
             $tournamentDetail->tournament_summary = $tournamentSummaryRecord;
             $tournamentSummaryRecord->status = $commonController->commonCodeGridFormatter('TournamentStatus', 'description_vi',  $tournamentSummaryRecord->status);
         } else {
@@ -21,7 +21,7 @@ trait TournamentDetailFormattingTrait
         }
 
         $tournaments = Tournament::all()->keyBy('id');
-        if ($tournamentRecord = $tournaments->get($tournamentDetail->tournament_id)) {
+        if ($tournamentRecord = $tournaments->get($tournamentId ?? $tournamentDetail->tournament_id)) {
             $tournamentDetail->tournament = $tournamentRecord;
             $this->_formatTournament($tournamentRecord, $commonController);
         } else {

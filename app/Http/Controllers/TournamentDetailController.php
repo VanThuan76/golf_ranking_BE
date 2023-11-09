@@ -16,13 +16,22 @@ class TournamentDetailController extends Controller
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
+        $filters = $request->input('filters', []);
+
+        $tournamentId = null;
+        foreach ($filters as $filter) {
+            if ($filter['field'] === 'tournament_id') {
+                $tournamentId = $filter['value'];
+                break;
+            }
+        }
 
         $tournamentDetails = TournamentDetail::orderBy($sorts[0]['field'], $sorts[0]['direction'])
             ->paginate($size, ['*'], 'page', $page);
 
         $transformedTournamentDetails = [];
         foreach ($tournamentDetails->getCollection() as $tournamentDetail) {
-            $tournamentDetail = $this->_formatTournamentDetail($tournamentDetail, $commonController);
+            $tournamentDetail = $this->_formatTournamentDetail($tournamentDetail, $tournamentId, $commonController);
             $transformedTournamentDetails[] = $tournamentDetail;
         }
         $totalPages = ceil($tournamentDetails->total() / $size);
