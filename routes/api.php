@@ -35,12 +35,16 @@ Route::get('groups-by-tournament/{tournament_id}', 'GroupController@getListByTou
 Route::get('organisers', 'OrganiserController@getList');
 Route::get('common-code', 'CommonCodeController@getList');
 
+Route::post('first-register-member', 'FirstRegisterMemberController@firstRegisterMember');
+Route::put('first-update-register-member/{memberId}', 'FirstRegisterMemberController@firstUpdateRegisterMember');
+
 Route::post('register-member', 'MemberController@registerMember');
 Route::put('update-member/{memberId}', 'MemberController@updateMember');
 Route::get('members/{id}', 'MemberController@getById');
 Route::post('members/search', [MemberController::class, 'searchMember']);
 Route::get('nationality-members', 'MemberController@getListNationality');
 Route::post('check-handicap-vga-exists', 'MemberController@checkHandicapVgaExists');
+Route::post('check-vjgr-code-exists', 'MemberController@checkCodeVjgrExists');
 
 Route::post('tournament-summary', 'TournamentSummaryController@getList');
 Route::post('tournament-detail', 'TournamentDetailController@getList');

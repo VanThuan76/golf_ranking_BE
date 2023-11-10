@@ -18,6 +18,7 @@ Route::group([
     $router->resource('/news', NewsController::class);
     $router->resource('/common-code', CommonCodeController::class);
     $router->resource('/group', GroupController::class);
+    $router->resource('/manage-register', RegisterController::class);
     $router->resource('/member', MemberController::class);
     $router->resource('/organiser', OrganiserController::class);
     $router->resource('/tournament', TournamentController::class);
