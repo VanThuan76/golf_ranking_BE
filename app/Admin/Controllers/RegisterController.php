@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Admin\Controllers\ConstantHelper;
 use App\Http\Models\Member;
 use App\Http\Models\Register;
+use App\Http\Models\User;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -111,7 +112,11 @@ class RegisterController extends AdminController
         $form->select('gender', __('Giới tính'))->options($genderOptions)->required();
         $form->date('date_of_birth', __('Ngày sinh'))->required();
         $form->text('nationality', __('Mã quốc gia'))->help("Ví dụ: VN hoặc KR")->required();
-        $form->text('email', __('Email'));
+        if($form->isEditing()){
+            $form->text('email', __('Email'))->disable();
+        }else{
+            $form->text('email', __('Email'));
+        }
         $form->mobile('phone_number', __('Số điện thoại'))->options(['mask' => '999 999 9999'])->required();
         $form->text('handicap_vga', __('Handicap_vga'));
         $form->text('guardian_name', __('Tên người bảo trợ'));
@@ -123,12 +128,22 @@ class RegisterController extends AdminController
         //After save
         $form->saved(function (Form $form) {
             if ($form->model()->status == 1) {
-                $member = Member::where('vjgr_code', $form->model()->vjgr_code);
-                $memberData = $form->model()->toArray();
-                unset($memberData['id']);
-                unset($memberData['created_at']);
-                unset($memberData['updated_at']);
-                $member->update($memberData);
+                $member = Member::where('vjgr_code', $form->model()->vjgr_code)->first();
+                if ($member) {
+                    $memberData = $form->model()->toArray();
+                    unset($memberData['id']);
+                    unset($memberData['created_at']);
+                    unset($memberData['updated_at']);
+                    unset($memberData['reason']);
+                    
+                    $member->update($memberData);
+        
+                    $user = User::where('email', $form->model()->email)->first();
+                    if ($user) {
+                        $user->member_id = $member->id;
+                        $user->save();
+                    }
+                }
             }
         });
         return $form;

@@ -49,14 +49,6 @@ class FirstRegisterMemberController extends Controller
             $member->handicap_vga = $validatedData['handicap_vga'];
         }
         $member->save();
-
-        $memberId = $member->id;
-        $user = User::find($validatedData['user_id']);
-        if ($user) {
-            $user->member_id = $memberId;
-            $user->save();
-        }
-
         $member = $this->_formatMember($member, $commonController);
         $response = $this->_formatBaseResponse(200, $member, 'Tạo thành viên thành công');
         return response()->json($response);
