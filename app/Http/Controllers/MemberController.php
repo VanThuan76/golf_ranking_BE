@@ -49,7 +49,7 @@ class MemberController extends Controller
 
     public function searchMember(Request $request, UtilsCommonHelper $commonController)
     {
-        $query = Member::all();
+        $query = Member::query()->orderBy("best_rank", "asc");
         $filters = $request->input('filters', []);
 
         foreach ($filters as $filter) {
