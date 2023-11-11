@@ -123,6 +123,7 @@ class RegisterController extends AdminController
         $form->text('relationship', __('Mối quan hệ'));
         $form->mobile('guardian_phone', __('Số điện thoại người bảo trợ'))->options(['mask' => '999 999 9999'])->required();
         $form->text('guardian_email', __('Email người bảo trợ'));
+        $form->textarea('reason', __('Lý do từ chối'))->help("Nên điền khi bị từ chối");
         $form->select('status', __('Trạng thái'))->options($statusOptions)->default(3)->required();
 
         //After save

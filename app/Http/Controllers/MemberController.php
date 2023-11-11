@@ -18,7 +18,7 @@ class MemberController extends Controller
     {
         $member = Member::find($id);
         if (!$member) {
-            $response = $this->_formatBaseResponse(404, null, 'Giải đấu không được tìm thấy');
+            $response = $this->_formatBaseResponse(404, null, 'Thành viên không được tìm thấy');
             return response()->json($response, 404);
         }
 

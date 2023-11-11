@@ -103,4 +103,26 @@ class FirstRegisterMemberController extends Controller
         $response = $this->_formatBaseResponse(200, $updatedMember, 'Cập nhật thành viên thành công');
         return response()->json($response);
     }
+    public function getByRegisterMember(Request $request, UtilsCommonHelper $commonController)
+    {
+        $user = User::where('email', $request->input("email"))->first();
+        $registerMember = Register::where('email', $request->input("email"))->get();
+        if (!$registerMember) {
+            $response = $this->_formatBaseResponse(404, null, 'Đăng ký không được tìm thấy');
+            return response()->json($response, 404);
+        }
+
+        $transformedUser = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ];
+        $transformedMember = $this->_formatMember($registerMember, $commonController);
+
+        $response = $this->_formatBaseResponse(200, [
+            'member' => $transformedMember,
+            'user' => $transformedUser,
+        ], 'Lấy dữ liệu thành công');
+        return response()->json($response);
+    }
 }
