@@ -11,10 +11,10 @@ trait MemberFormattingTrait
     private function _formatMember($member, UtilsCommonHelper $commonController)
     {
         if ($member instanceof \Illuminate\Database\Eloquent\Collection) {
-            // Xử lý trường hợp là collection
-            return $member->map(function ($item) use ($commonController) {
+            $formattedMembers = $member->map(function ($item) use ($commonController) {
                 return $this->_formatMember($item, $commonController);
             });
+            return $formattedMembers->first();
         }
         $groups = Group::all()->keyBy('id');
         if ($member->group_id != null) {
