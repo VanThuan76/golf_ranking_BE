@@ -27,14 +27,14 @@ class TournamentDetailController extends Controller
         }
 
         $tournamentDetails = TournamentDetail::where('tournament_id', $tournamentId)->orderBy($sorts[0]['field'], $sorts[0]['direction'])
-            ->paginate($size, ['*'], 'page', $page);
+            ->paginate($size);
 
         $transformedTournamentDetails = [];
         foreach ($tournamentDetails->getCollection() as $tournamentDetail) {
             $tournamentDetail = $this->_formatTournamentDetail($tournamentDetail, $tournamentId, $commonController);
             $transformedTournamentDetails[] = $tournamentDetail;
         }
-        $totalPages = ceil($tournamentDetails->total() / $size);
+        $totalPages = $tournamentDetails->lastPage();
 
         return response()->json($this->_formatCountResponse(
             $transformedTournamentDetails,

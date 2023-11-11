@@ -26,7 +26,6 @@ class TournamentController extends Controller
             }
         }
 
-        $page = $request->input('page', 1) + 1;
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
 
@@ -39,14 +38,14 @@ class TournamentController extends Controller
             }
         }
 
-        $tournaments = $query->paginate($size, ['*'], 'page', $page);
+        $tournaments = $query->paginate($size);
         $transformedTournaments = [];
         foreach ($tournaments as $member) {
             $member = $this->_formatTournament($member, $commonController);
             $transformedTournaments[] = $member;
         }
 
-        $totalPages = ceil($tournaments->total() / $size);
+        $totalPages = $tournaments->lastPage();
         return response()->json($this->_formatCountResponse(
             $transformedTournaments,
             $tournaments->perPage(),

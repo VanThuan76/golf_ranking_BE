@@ -24,9 +24,9 @@ class TournamentSummaryController extends Controller
         if (!empty($memberId)) {
             $query->where('member_id', $memberId);
         }
-        $tournamentSummary = $query->paginate($size, ['*'], 'page', $page);
+        $tournamentSummary = $query->paginate($size);
         $transformedTournamentSummary = $this->_formatTournamentSummary($tournamentSummary->getCollection(), $commonController);
-        $totalPages = ceil($tournamentSummary->total() / $size);
+        $totalPages = $tournamentSummary->lastPage();
 
         return response()->json($this->_formatCountResponse(
             $transformedTournamentSummary,

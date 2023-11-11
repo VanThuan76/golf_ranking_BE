@@ -49,39 +49,39 @@ class MemberController extends Controller
 
     public function searchMember(Request $request, UtilsCommonHelper $commonController)
     {
-        $query = Member::query()->orderBy("best_rank", "asc");
-        $filters = $request->input('filters', []);
+        $query = Member::query()->orderBy("current_rank", "asc");
 
+        $filters = $request->input('filters', []);
+        
         foreach ($filters as $filter) {
             $field = $filter['field'];
             $value = $filter['value'];
-
+        
             if (!empty($value)) {
                 $query->where($field, 'like', '%' . $value . '%');
             }
         }
-
-        $page = $request->input('page', 1) + 1;
+        
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
-
+        
         foreach ($sorts as $sort) {
             $field = $sort['field'];
             $direction = $sort['direction'];
-
+        
             if (!empty($field) && !empty($direction)) {
                 $query->orderBy($field, $direction);
             }
         }
-
-        $members = $query->paginate($size, ['*'], 'page', $page);
+        
+        $members = $query->paginate($size);
         $transformedMembers = [];
         foreach ($members as $member) {
             $member = $this->_formatMember($member, $commonController);
             $transformedMembers[] = $member;
         }
-
-        $totalPages = ceil($members->total() / $size);
+        
+        $totalPages = $members->lastPage();
         return response()->json($this->_formatCountResponse(
             $transformedMembers,
             $members->perPage(),
