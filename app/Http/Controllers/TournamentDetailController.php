@@ -11,13 +11,21 @@ use Illuminate\Http\Request;
 class TournamentDetailController extends Controller
 {
     use ResponseFormattingTrait, TournamentDetailFormattingTrait;
+
     public function getList(Request $request, UtilsCommonHelper $commonController)
     {
-        $page = $request->input('page', 1);
-        $size = $request->input('size', 10);
-        $sorts = $request->input('sorts', []);
+        $query = TournamentDetail::query();
+
         $filters = $request->input('filters', []);
 
+        foreach ($filters as $filter) {
+            $field = $filter['field'];
+            $value = $filter['value'];
+
+            if (!empty($value)) {
+                $query->where($field, 'like', '%' . $value . '%');
+            }
+        }
         $tournamentId = null;
         foreach ($filters as $filter) {
             if ($filter['field'] === 'tournament_id') {
@@ -25,9 +33,20 @@ class TournamentDetailController extends Controller
                 break;
             }
         }
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 10);
+        $sorts = $request->input('sorts', []);
 
-        $tournamentDetails = TournamentDetail::where('tournament_id', $tournamentId)->orderBy($sorts[0]['field'], $sorts[0]['direction'])
-            ->paginate($size);
+        foreach ($sorts as $sort) {
+            $field = $sort['field'];
+            $direction = $sort['direction'];
+
+            if (!empty($field) && !empty($direction)) {
+                $query->orderBy($field, $direction);
+            }
+        }
+
+        $tournamentDetails = $query->paginate($size);
 
         $transformedTournamentDetails = [];
         foreach ($tournamentDetails->getCollection() as $tournamentDetail) {
@@ -40,6 +59,7 @@ class TournamentDetailController extends Controller
             $transformedTournamentDetails,
             $tournamentDetails->perPage(),
             $totalPages
-        ));
+        )
+        );
     }
 }
