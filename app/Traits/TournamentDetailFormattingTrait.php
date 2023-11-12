@@ -12,13 +12,18 @@ trait TournamentDetailFormattingTrait
     use TournamentFormattingTrait;
     private function _formatTournamentDetail($tournamentDetail, $tournamentId, UtilsCommonHelper $commonController)
     {
-        $tournamentSummary = TournamentSummary::all()->keyBy('id');
-        if ($tournamentSummaryRecord = $tournamentSummary->get($tournamentId ?? $tournamentDetail->tournament_id)) {
+        $tournamentSummary = TournamentSummary::all();
+
+        $memberId = $tournamentDetail->member_id;
+        $tournamentSummaryRecord = $tournamentSummary->where('member_id', $memberId)->where('tournament_id', $tournamentId)->first();
+
+        if ($tournamentSummaryRecord) {
             $tournamentDetail->tournament_summary = $tournamentSummaryRecord;
-            $tournamentSummaryRecord->status = $commonController->commonCodeGridFormatter('TournamentStatus', 'description_vi',  $tournamentSummaryRecord->status);
+            $tournamentSummaryRecord->status = $commonController->commonCodeGridFormatter('TournamentStatus', 'description_vi', $tournamentSummaryRecord->status);
         } else {
             $tournamentDetail->tournament_summary = null;
         }
+
 
         $tournaments = Tournament::all()->keyBy('id');
         if ($tournamentRecord = $tournaments->get($tournamentId ?? $tournamentDetail->tournament_id)) {

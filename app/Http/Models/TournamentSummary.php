@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TournamentSummary extends Model
 {
-    protected $table = 'tournament_summary_bk';
+    protected $table = 'tournament_summary';
 
     public function tournament()
     {
