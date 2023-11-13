@@ -48,7 +48,7 @@ class TournamentController extends Controller
         $totalPages = $tournaments->lastPage();
         return response()->json($this->_formatCountResponse(
             $transformedTournaments,
-            $tournaments->perPage(),
+            $tournaments->perPage() - 1,
             $totalPages
         ));
     }

@@ -75,7 +75,7 @@ class NewsController extends Controller
     $totalPages = ceil($news->total() / $size);
     return response()->json($this->_formatCountResponse(
         $transformedNews,
-        $news->perPage(),
+        $news->perPage() - 1,
         $totalPages,
     ));
 }
