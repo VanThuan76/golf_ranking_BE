@@ -30,7 +30,7 @@ class TournamentSummaryController extends Controller
 
         return response()->json($this->_formatCountResponse(
             $transformedTournamentSummary,
-            $tournamentSummary->perPage(),
+            $tournamentSummary->perPage() - 1,
             $totalPages
         ));
     }

@@ -57,7 +57,7 @@ class TournamentDetailController extends Controller
 
         return response()->json($this->_formatCountResponse(
             $transformedTournamentDetails,
-            $tournamentDetails->perPage(),
+            $tournamentDetails->perPage() - 1,
             $totalPages
         )
         );
