@@ -37,7 +37,7 @@ Route::get('common-code', 'CommonCodeController@getList');
 
 Route::post('first-register-member', 'FirstRegisterMemberController@firstRegisterMember');
 Route::put('first-update-register-member/{memberId}', 'FirstRegisterMemberController@firstUpdateRegisterMember');
-Route::post('first-register-member', 'FirstRegisterMemberController@getByRegisterMember');
+Route::post('first-get-register-member', 'FirstRegisterMemberController@getByRegisterMember');
 
 Route::post('register-member', 'MemberController@registerMember');
 Route::put('update-member/{memberId}', 'MemberController@updateMember');
