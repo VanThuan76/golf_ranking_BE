@@ -14,6 +14,20 @@ class FirstRegisterMemberController extends Controller
 {
     use ResponseFormattingTrait, MemberFormattingTrait;
 
+    public function getById($id, UtilsCommonHelper $commonController)
+    {
+        $member = Register::find($id);
+        if (!$member) {
+            $response = $this->_formatBaseResponse(404, null, 'Thành viên không được tìm thấy');
+            return response()->json($response, 404);
+        }
+
+        $transformedMember = $this->_formatMember($member, $commonController);
+
+        $response = $this->_formatBaseResponse(200, $transformedMember, 'Lấy dữ liệu thành công');
+        return response()->json($response);
+    }
+
     public function firstRegisterMember(Request $request, UtilsCommonHelper $commonController)
     {
         $validatedData = $request->validate([
