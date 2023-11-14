@@ -35,7 +35,7 @@ Route::get('groups-by-tournament/{tournament_id}', 'GroupController@getListByTou
 Route::get('organisers', 'OrganiserController@getList');
 Route::get('common-code', 'CommonCodeController@getList');
 
-Route::get('first-register-member/{id}', 'FirstRegisterMemberController@getById');
+Route::get('first-get-register-member/{id}', 'FirstRegisterMemberController@getById');
 Route::post('first-register-member', 'FirstRegisterMemberController@firstRegisterMember');
 Route::put('first-update-register-member/{memberId}', 'FirstRegisterMemberController@firstUpdateRegisterMember');
 Route::post('first-get-register-member', 'FirstRegisterMemberController@getByRegisterMember');
