@@ -24,9 +24,6 @@ class TournamentDetailController extends Controller
         $tournamentId = null;
 
         foreach ($filters as $filter) {
-            // if (!empty($value)) {
-            //     $query->where($field, 'like', '%' . $value . '%');
-            // }
             $field = $filter['field'];
             $value = $filter['value'];
             if ($field === 'group_id') {
@@ -34,6 +31,9 @@ class TournamentDetailController extends Controller
             }else if($field === 'tournament_id'){
                 $queryDB->where('vjgr.tournament_detail.tournament_id',$field === 'tournament_id' ? $value : 1);
                 $tournamentId = $field === 'tournament_id' ? $value : 1;
+            }
+            if ($field !== 'group_id') {
+                $query->where($field, 'like', '%' . $value . '%');
             }
         }
         $membersMap = $queryDB->get();

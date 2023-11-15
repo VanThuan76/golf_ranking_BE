@@ -12,19 +12,7 @@ trait TournamentDetailFormattingTrait
     use TournamentFormattingTrait;
     private function _formatTournamentDetail($membersMap = null, $tournamentDetail, $tournamentId, UtilsCommonHelper $commonController)
     {
-        $tournamentSummary = TournamentSummary::all();
-
-        $memberId = $tournamentDetail->member_id;
-        $tournamentSummaryRecord = $tournamentSummary->where('member_id', $memberId)->where('tournament_id', $tournamentId)->first();
-
-        if ($tournamentSummaryRecord) {
-            $tournamentDetail->tournament_summary = $tournamentSummaryRecord;
-            $tournamentSummaryRecord->status = $commonController->commonCodeGridFormatter('TournamentStatus', 'description_vi', $tournamentSummaryRecord->status);
-        } else {
-            $tournamentDetail->tournament_summary = null;
-        }
-
-
+        //Tournament
         $tournaments = Tournament::all()->keyBy('id');
         if ($tournamentRecord = $tournaments->get($tournamentId ?? $tournamentDetail->tournament_id)) {
             $tournamentDetail->tournament = $tournamentRecord;
@@ -32,14 +20,18 @@ trait TournamentDetailFormattingTrait
         } else {
             $tournamentDetail->tournament = null;
         }
+
+        //Member && TournamentSummary
+        $tournamentSummary = TournamentSummary::all()->keyBy('member_id');;
         if ($membersMap !== null) {
             $members = $membersMap;
         } else {
             $members = Member::query()->get()->keyBy('id');
         }
-
         if ($memberRecord = $members->get($tournamentDetail->member_id)) {
             $tournamentDetail->member = $memberRecord;
+            $tournamentSummary = $tournamentSummary->get($memberRecord->member_id);
+            $tournamentDetail->tournament_summary = $tournamentSummary;
             $this->_formatMember($memberRecord, $commonController);
         } else {
             $tournamentDetail->member = null;
