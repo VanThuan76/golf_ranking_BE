@@ -55,7 +55,9 @@ class TournamentDetailController extends Controller
         $transformedTournamentDetails = [];
         foreach ($tournamentDetails->getCollection() as $tournamentDetail) {
             $tournamentDetail = $this->_formatTournamentDetail($groupId, $tournamentDetail, $tournamentId, $commonController);
-            $transformedTournamentDetails[] = $tournamentDetail;
+            if ($tournamentDetail->member !== null) {
+                $transformedTournamentDetails[] = $tournamentDetail;
+            }
         }
         $totalPages = $tournamentDetails->lastPage();
 
