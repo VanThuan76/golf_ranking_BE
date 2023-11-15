@@ -38,7 +38,7 @@ class TournamentController extends Controller
             }
         }
 
-        $tournaments = $query->paginate($size);
+        $tournaments = $query->paginate($size, ['*'], 'page', $request->input('page', 1));
         $transformedTournaments = [];
         foreach ($tournaments as $member) {
             $member = $this->_formatTournament($member, $commonController);

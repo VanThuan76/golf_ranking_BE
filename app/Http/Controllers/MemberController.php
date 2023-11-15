@@ -75,7 +75,7 @@ class MemberController extends Controller
             }
         }
         
-        $members = $query->paginate($size);
+        $members = $query->paginate($size, ['*'], 'page', $request->input('page', 1));
         $transformedMembers = [];
         foreach ($members as $member) {
             $member = $this->_formatMember($member, $commonController);
