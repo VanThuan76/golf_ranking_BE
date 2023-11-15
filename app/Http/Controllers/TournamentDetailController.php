@@ -7,6 +7,7 @@ use App\Http\Models\TournamentDetail;
 use App\Traits\ResponseFormattingTrait;
 use App\Traits\TournamentDetailFormattingTrait;
 use Illuminate\Http\Request;
+use DB;
 
 class TournamentDetailController extends Controller
 {
@@ -14,32 +15,28 @@ class TournamentDetailController extends Controller
 
     public function getList(Request $request, UtilsCommonHelper $commonController)
     {
-        $query = TournamentDetail::query();
-
         $filters = $request->input('filters', []);
-        $groupId = null;
-
-        foreach ($filters as $filter) {
-            $field = $filter['field'];
-            $value = $filter['value'];
-
-            if ($field === 'group_id') {
-                $groupId = $value;
-                continue;
-            }
-            if (!empty($value)) {
-                $query->where($field, 'like', '%' . $value . '%');
-            }
-        }
-        $tournamentId = null;
-        foreach ($filters as $filter) {
-            if ($filter['field'] === 'tournament_id') {
-                $tournamentId = $filter['value'];
-                break;
-            }
-        }
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
+        $query = TournamentDetail::query();
+        $queryDB = DB::table('vjgr.tournament_detail')->join('vjgr.member', 'vjgr.tournament_detail.member_id', '=', 'vjgr.member.id');
+        $membersMap = null;
+        $tournamentId = null;
+
+        foreach ($filters as $filter) {
+            // if (!empty($value)) {
+            //     $query->where($field, 'like', '%' . $value . '%');
+            // }
+            $field = $filter['field'];
+            $value = $filter['value'];
+            if ($field === 'group_id') {
+                $queryDB->where('vjgr.member.group_id', $field === 'group_id' ? $value : 1);
+            }else if($field === 'tournament_id'){
+                $queryDB->where('vjgr.tournament_detail.tournament_id',$field === 'tournament_id' ? $value : 1);
+                $tournamentId = $field === 'tournament_id' ? $value : 1;
+            }
+        }
+        $membersMap = $queryDB->get();
 
         foreach ($sorts as $sort) {
             $field = $sort['field'];
@@ -54,18 +51,19 @@ class TournamentDetailController extends Controller
 
         $transformedTournamentDetails = [];
         foreach ($tournamentDetails->getCollection() as $tournamentDetail) {
-            $tournamentDetail = $this->_formatTournamentDetail($groupId, $tournamentDetail, $tournamentId, $commonController);
+            $tournamentDetail = $this->_formatTournamentDetail($membersMap, $tournamentDetail, $tournamentId, $commonController);
             if ($tournamentDetail->member !== null) {
                 $transformedTournamentDetails[] = $tournamentDetail;
             }
         }
-        $totalPages = $tournamentDetails->lastPage();
 
-        return response()->json($this->_formatCountResponse(
-            $transformedTournamentDetails,
-            $tournamentDetails->perPage() - 1,
-            $totalPages
-        )
+        $totalPages = $tournamentDetails->lastPage();
+        return response()->json(
+            $this->_formatCountResponse(
+                $transformedTournamentDetails,
+                $tournamentDetails->perPage() - 1,
+                $totalPages
+            )
         );
     }
 }

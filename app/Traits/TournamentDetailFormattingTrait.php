@@ -10,7 +10,7 @@ use App\Http\Models\TournamentSummary;
 trait TournamentDetailFormattingTrait
 {
     use TournamentFormattingTrait;
-    private function _formatTournamentDetail($groupId = null, $tournamentDetail, $tournamentId, UtilsCommonHelper $commonController)
+    private function _formatTournamentDetail($membersMap = null, $tournamentDetail, $tournamentId, UtilsCommonHelper $commonController)
     {
         $tournamentSummary = TournamentSummary::all();
 
@@ -32,12 +32,12 @@ trait TournamentDetailFormattingTrait
         } else {
             $tournamentDetail->tournament = null;
         }
+        if ($membersMap !== null) {
+            $members = $membersMap;
+        } else {
+            $members = Member::query()->get()->keyBy('id');
+        }
 
-        $membersQuery = $groupId !== null
-        ? Member::where('group_id', $groupId)
-        : Member::query();
-
-        $members = $membersQuery->get()->keyBy('id');
         if ($memberRecord = $members->get($tournamentDetail->member_id)) {
             $tournamentDetail->member = $memberRecord;
             $this->_formatMember($memberRecord, $commonController);
