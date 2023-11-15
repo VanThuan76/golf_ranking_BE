@@ -17,11 +17,16 @@ class TournamentDetailController extends Controller
         $query = TournamentDetail::query();
 
         $filters = $request->input('filters', []);
+        $groupId = null;
 
         foreach ($filters as $filter) {
             $field = $filter['field'];
             $value = $filter['value'];
 
+            if ($field === 'group_id') {
+                $groupId = $value;
+                continue;
+            }
             if (!empty($value)) {
                 $query->where($field, 'like', '%' . $value . '%');
             }
@@ -33,7 +38,6 @@ class TournamentDetailController extends Controller
                 break;
             }
         }
-        $page = $request->input('page', 1);
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
 
@@ -46,11 +50,11 @@ class TournamentDetailController extends Controller
             }
         }
 
-        $tournamentDetails = $query->paginate($size);
+        $tournamentDetails = $query->paginate($size, ['*'], 'page', $request->input('page', 1));
 
         $transformedTournamentDetails = [];
         foreach ($tournamentDetails->getCollection() as $tournamentDetail) {
-            $tournamentDetail = $this->_formatTournamentDetail($tournamentDetail, $tournamentId, $commonController);
+            $tournamentDetail = $this->_formatTournamentDetail($groupId, $tournamentDetail, $tournamentId, $commonController);
             $transformedTournamentDetails[] = $tournamentDetail;
         }
         $totalPages = $tournamentDetails->lastPage();
