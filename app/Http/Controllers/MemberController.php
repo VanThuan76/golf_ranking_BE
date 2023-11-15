@@ -85,7 +85,7 @@ class MemberController extends Controller
         $totalPages = $members->lastPage();
         return response()->json($this->_formatCountResponse(
             $transformedMembers,
-            $members->perPage() - 1,
+            $members->perPage(),
             $totalPages
         ));
     }
