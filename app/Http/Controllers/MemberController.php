@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Admin\Controllers\UtilsCommonHelper;
 use App\Http\Models\Member;
+use App\Http\Models\Register;
 use App\Traits\MemberFormattingTrait;
 use App\Traits\ResponseFormattingTrait;
 use Illuminate\Http\Request;
@@ -189,12 +190,18 @@ class MemberController extends Controller
     {
         $codeVjgr = $request->input('vjgr_code');
         $member = Member::where('vjgr_code', $codeVjgr)->first();
-        if ($member) {
+        if (!$member) {
             $response = $this->_formatBaseResponse(400, [], 'Mã VJGR không tồn tại');
             return response()->json($response);
         } else {
-            $response = $this->_formatBaseResponse(200, [], 'Mã VJGR đã được đăng ký');
-            return response()->json($response);
+            $register = Register::where('vjgr_code', $codeVjgr)->first();
+            if($register){
+                $response = $this->_formatBaseResponse(400, [], 'Mã VJGR đã được đăng ký');
+                return response()->json($response);
+            }else{
+                $response = $this->_formatBaseResponse(200, [], 'Mã VJGR chưa được đăng ký');
+                return response()->json($response);
+            }
         }
     }
 }
