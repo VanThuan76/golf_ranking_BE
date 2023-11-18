@@ -53,41 +53,42 @@ class MemberController extends Controller
         $query = Member::query()->orderBy("current_rank", "asc");
 
         $filters = $request->input('filters', []);
-        
+
         foreach ($filters as $filter) {
             $field = $filter['field'];
             $value = $filter['value'];
-        
+
             if (!empty($value)) {
                 $query->where($field, 'like', '%' . $value . '%');
             }
         }
-        
+
         $size = $request->input('size', 10);
         $sorts = $request->input('sorts', []);
-        
+
         foreach ($sorts as $sort) {
             $field = $sort['field'];
             $direction = $sort['direction'];
-        
+
             if (!empty($field) && !empty($direction)) {
                 $query->orderBy($field, $direction);
             }
         }
-        
+
         $members = $query->paginate($size, ['*'], 'page', $request->input('page', 1));
         $transformedMembers = [];
         foreach ($members as $member) {
             $member = $this->_formatMember($member, $commonController);
             $transformedMembers[] = $member;
         }
-        
+
         $totalPages = $members->lastPage();
         return response()->json($this->_formatCountResponse(
             $transformedMembers,
             $members->perPage(),
             $totalPages
-        ));
+        )
+        );
     }
     public function registerMember(Request $request, UtilsCommonHelper $commonController)
     {
@@ -195,10 +196,13 @@ class MemberController extends Controller
             return response()->json($response);
         } else {
             $register = Register::where('vjgr_code', $codeVjgr)->first();
-            if($register){
+            if ($register->status == 2) {
+                $response = $this->_formatBaseResponse(200, [], 'Mã VJGR đã đăng ký nhưng bị từ chối(hợp lệ)');
+                return response()->json($response);
+            } else if ($register->status == 1) {
                 $response = $this->_formatBaseResponse(400, [], 'Mã VJGR đã được đăng ký');
                 return response()->json($response);
-            }else{
+            } else {
                 $response = $this->_formatBaseResponse(200, [], 'Mã VJGR chưa được đăng ký');
                 return response()->json($response);
             }
